@@ -1,0 +1,21 @@
+name: Crystal Mine
+version: 0.1.0
+
+# authors:
+#   - name <email@example.com>
+
+# description: |
+#   Short description of 
+#
+#
+#
+
+dependencies:
+   octokit:
+     github: watzon/octokit.cr
+
+# development_dependencies:
+#   webmock:
+#     github: manastech/webmock.cr
+
+# license: MIT
