@@ -1,0 +1,4 @@
+https://github.com/szabgab/crystal-mine.cr
+https://github.com/watzon/octokit.cr
+https://github.com/luckyframework/lucky
+https://github.com/soveran/toro
