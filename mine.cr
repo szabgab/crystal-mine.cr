@@ -1,27 +1,42 @@
 require "octokit"
 require "log"
 require "uri"
+require "option_parser"
 
 
 main
 
 
 def main
-    Log.setup(:trace)
     Log.info { "Start running" }
-    #get_repos
+    verbose, limit, keep = get_options
+    if verbose
+        Log.setup(:trace)
+    end
 
+    #get_repos
     root = File.tempname
     FileUtils.mkdir(root)
+    counter = 0
     Log.info { "Root directory #{root}" }
     repos = File.read_lines("repos.txt")
     repos.each {|repo|
+        counter += 1
+        if 0 < limit && limit < counter
+            break
+        end
+
         begin
             process repo, root
         rescue err
             Log.error { "There was an exception in #{repo}" }
         end
     }
+
+    if ! keep
+        FileUtils.rm_rf(root)
+    end
+
 end
 
 
@@ -94,4 +109,32 @@ def read_config
     line = File.read_lines(config_file).first
     username, token = line.split(":")
     return username, token
+end
+
+def get_options
+    verbose = false
+    limit = 0
+    keep = false
+
+    OptionParser.parse do |parser|
+        parser.banner = "Usage: miner.cr [arguments]"
+        parser.on("-v", "--verbose", "Verbose mode") { verbose = true }
+        parser.on("--keep", "Keep temporary directory") { keep = true }
+        parser.on("--limit=LIMIT", "How many URLs to process?") { |value| limit = value.to_i }
+        parser.on("-h", "--help", "Show this help") do
+            puts parser
+            exit
+        end
+        parser.invalid_option do |flag|
+            STDERR.puts "ERROR: #{flag} is not a valid option."
+            STDERR.puts parser
+            exit(1)
+        end
+        parser.missing_option do |flag|
+            STDERR.puts "ERROR: #{flag} requires a value"
+            STDERR.puts parser
+            exit(1)
+        end
+    end
+    return verbose, limit, keep
 end
