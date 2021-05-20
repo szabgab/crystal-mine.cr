@@ -77,7 +77,7 @@ def process(url, root)
 
     # Clone repo
     output, error, exit_code = capture("git", ["clone", "--depth", "1", url, path])
-    if exit_code == 0
+    if exit_code != 0
         Log.error { "Exit code #{exit_code}" }
         Log.error { "STDERR #{error}" }
         Log.error { "STDOUT #{output}" }
@@ -86,6 +86,23 @@ def process(url, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
+    data = {
+        "travis_ci"      => false,
+        "github_actions" => false,
+        "shard_yml"      => false,
+    }
+    Log.info { Path.new(path, ".travis.yml").to_s }
+    data["travis_ci"] = File.exists?(Path.new(path, ".travis.yml").to_s)
+    # TODO: Github Actions shall we check if there are *.yml or *.yaml files in the directory?
+    data["github_actions"] = File.exists?(Path.new(path, ".github", "workflows").to_s)
+    # TODO read the shard.yml
+    shard_yml = Path.new(path, "shard.yml").to_s
+    data["shard_yml"] = File.exists?(shard_yml)
+    if File.exists?(shard_yml)
+        Log.info { "Handling shard.yml" }
+    end
+    Log.info { data }
+
     # Store in some database
 end
 
