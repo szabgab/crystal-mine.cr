@@ -10,7 +10,7 @@ def main
     Log.setup(:trace)
     Log.info { "Start running" }
     #get_repos
-    
+
     root = File.tempname
     FileUtils.mkdir(root)
     Log.info { "Root directory #{root}" }
@@ -18,7 +18,7 @@ def main
     repos.each {|repo|
         begin
             process repo, root
-        rescue err 
+        rescue err
             Log.error { "There was an exception in #{repo}" }
         end
     }
@@ -61,14 +61,15 @@ def process(url, root)
     path = Path.new(path, repo_name).to_s
 
     # Clone repo
-    # output, error, exit_code = capture("git", ["clone", "--depth", "1", url, path])
-    # if exit_code == 0
-    #     Log.error { "Exit code #{exit_code}" }
-    #     Log.error { "STDERR #{error}" }
-    #     return
-    # end
+    output, error, exit_code = capture("git", ["clone", "--depth", "1", url, path])
+    if exit_code == 0
+        Log.error { "Exit code #{exit_code}" }
+        Log.error { "STDERR #{error}" }
+        Log.error { "STDOUT #{output}" }
+        return
+    end
 
-    #Log.info { "Deal with repo" }
+    Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
     # Store in some database
 end

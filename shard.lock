@@ -1,5 +1,9 @@
 version: 2.0
 shards:
+  ameba:
+    git: https://github.com/crystal-ameba/ameba.git
+    version: 0.14.3
+
   halite:
     git: https://github.com/icyleaf/halite.git
     version: 0.12.0
