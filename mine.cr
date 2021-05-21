@@ -3,17 +3,19 @@ require "log"
 require "uri"
 require "option_parser"
 require "yaml"
-
+require "./src/mine/db"
 
 main
 
 
 def main
-    Log.info { "Start running" }
     verbose, limit, keep, url, repos_file = get_options
     if verbose
         Log.setup(:trace)
+    else
+        Log.setup(:warn)
     end
+    create_db   
 
     #get_repos
     root = File.tempname
@@ -93,11 +95,14 @@ def process(url, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
-    data = {
-        "travis_ci"      => false,
-        "github_actions" => false,
-        "shard_yml"      => false,
-    }
+    data = Hash(String, String | Bool).new
+    data["host"]           = host
+    data["user_name"]      = user_name
+    data["repo_name"]      = repo_name
+    data["travis_ci"]      = false
+    data["github_actions"] = false
+    data["shard_yml"]      = false
+
     Log.info { Path.new(path, ".travis.yml").to_s }
     data["travis_ci"] = File.exists?(Path.new(path, ".travis.yml").to_s)
     # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
@@ -112,16 +117,16 @@ def process(url, root)
             YAML.parse(file)
         end
         Log.info { shards }
-        Log.info { shards["name"] }
-        Log.info { shards.as_h.has_key?("description") ? shards["description"] : "" }
-        Log.info { shards["dependencies"] }
+        ["name", "description", "version"].each {|field| 
+            data[field] = shards.as_h.has_key?(field) ? shards[field].to_s : ""
+        }
+        #Log.info { shards["dependencies"] }
         # development_dependencies
-        Log.info { shards["version"] }
-        Log.info { shards["authors"] }
+        #Log.info { shards["authors"] }
     end
     Log.info { data }
-
-    # Store in some database
+    rows_affected, last_insert_id = store_in_db(data)
+    Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
 
 

@@ -10,6 +10,9 @@ description: |
 dependencies:
    octokit:
      github: watzon/octokit.cr
+   sqlite3:
+     github: crystal-lang/crystal-sqlite3
+
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
