@@ -53,6 +53,7 @@ def get_repos
 end
 
 def process_wrapper(url, root)
+    Log.info { "Process URL '#{url}' directory #{root}" }
     begin
         process url, root
     rescue err
@@ -61,8 +62,6 @@ def process_wrapper(url, root)
 end
 
 def process(url, root)
-    Log.info { "Process URL '#{url}' directory #{root}" }
-
     # https://github.com/szabgab/crystal-mine.cr
 
     # TODO check if the URL looks good?
