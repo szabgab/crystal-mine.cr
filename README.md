@@ -18,12 +18,21 @@ user
 USERNAME:TOKEN
 ```
 
-* TODO: Fetch all the Crystal projects from Github (waiting for watzon/octokit.cr)
+## TODO
 
-* TODO:
-* 
+* Store parsed data in database
+* Create web interface to display data from database
+* Move application inside Docker container and docker-compose
+* Deploy application
+
+* Fetch all the Crystal projects from Github (waiting for watzon/octokit.cr or using plain api request)
+
+
+* Allow user to search database (name of the project, description)
+* Show last-modified based on GitHub
 * Create a cross reference with the authors
 * Create a page with the pictures of the authors
 * Collect all the contributors as well and show them as well
 * Allow people to ask to be excluded (a config file in the mine or in their own GitHub repo?)
+* List dependencies based on the shard.yml and based on the actual usage, link to dependencies, list reverse dependencies
 
