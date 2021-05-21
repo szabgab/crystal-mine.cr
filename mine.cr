@@ -15,7 +15,7 @@ def main
     else
         Log.setup(:warn)
     end
-    create_db   
+    create_db
 
     #get_repos
     root = File.tempname
@@ -117,7 +117,7 @@ def process(url, root)
             YAML.parse(file)
         end
         Log.info { shards }
-        ["name", "description", "version"].each {|field| 
+        ["name", "description", "version"].each {|field|
             data[field] = shards.as_h.has_key?(field) ? shards[field].to_s : ""
         }
         #Log.info { shards["dependencies"] }
