@@ -53,9 +53,9 @@ def get_repos
 end
 
 def process_wrapper(url, root)
-        process url, root
-    rescue err
-        Log.error { "There was an exception in #{url} #{err}" }
+    process url, root
+rescue err
+    Log.error { "There was an exception in #{url} #{err}" }
 end
 
 def process(url, root)
