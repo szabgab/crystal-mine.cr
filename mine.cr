@@ -53,15 +53,13 @@ def get_repos
 end
 
 def process_wrapper(url, root)
-    Log.info { "Process URL '#{url}' directory #{root}" }
-    begin
         process url, root
     rescue err
         Log.error { "There was an exception in #{url} #{err}" }
-    end
 end
 
 def process(url, root)
+    Log.info { "Process URL '#{url}' directory #{root}" }
     # https://github.com/szabgab/crystal-mine.cr
 
     # TODO check if the URL looks good?
@@ -102,16 +100,14 @@ def process(url, root)
     }
     Log.info { Path.new(path, ".travis.yml").to_s }
     data["travis_ci"] = File.exists?(Path.new(path, ".travis.yml").to_s)
-    # TODO: Github Actions shall we check if there are *.yml or *.yaml files in the directory?
+    # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
     data["github_actions"] = File.exists?(Path.new(path, ".github", "workflows").to_s)
-    # TODO read the shard.yml
+
     shard_yml = Path.new(path, "shard.yml").to_s
     data["shard_yml"] = File.exists?(shard_yml)
 
     Log.info { "Handling shard.yml" }
     if File.exists?(shard_yml)
-        #content = File.new(shard_yml)
-        #shards = Hash(String, Int32).from_yaml(content)
         shards = File.open(shard_yml) do |file|
             YAML.parse(file)
         end
