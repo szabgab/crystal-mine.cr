@@ -2,6 +2,7 @@ require "octokit"
 require "log"
 require "uri"
 require "option_parser"
+require "yaml"
 
 
 main
@@ -9,7 +10,7 @@ main
 
 def main
     Log.info { "Start running" }
-    verbose, limit, keep = get_options
+    verbose, limit, keep, url, repos_file = get_options
     if verbose
         Log.setup(:trace)
     end
@@ -19,19 +20,21 @@ def main
     FileUtils.mkdir(root)
     counter = 0
     Log.info { "Root directory #{root}" }
-    repos = File.read_lines("repos.txt")
-    repos.each {|repo|
-        counter += 1
-        if 0 < limit && limit < counter
-            break
-        end
+    if ! url.nil?
+        process_wrapper url, root
+    elsif ! repos_file.nil?
+        repos = File.read_lines(repos_file)
+        repos.each {|repo|
+            counter += 1
+            if 0 < limit && limit < counter
+                break
+            end
+            process_wrapper repo, root
+        }
+    else
+        Log.error { "Neither --url nor --repos was provided}" }
+    end
 
-        begin
-            process repo, root
-        rescue err
-            Log.error { "There was an exception in #{repo}" }
-        end
-    }
 
     if ! keep
         FileUtils.rm_rf(root)
@@ -49,6 +52,13 @@ def get_repos
     #pp github.search_users "szabgab"
 end
 
+def process_wrapper(url, root)
+    begin
+        process url, root
+    rescue err
+        Log.error { "There was an exception in #{url} #{err}" }
+    end
+end
 
 def process(url, root)
     Log.info { "Process URL '#{url}' directory #{root}" }
@@ -98,8 +108,21 @@ def process(url, root)
     # TODO read the shard.yml
     shard_yml = Path.new(path, "shard.yml").to_s
     data["shard_yml"] = File.exists?(shard_yml)
+
+    Log.info { "Handling shard.yml" }
     if File.exists?(shard_yml)
-        Log.info { "Handling shard.yml" }
+        #content = File.new(shard_yml)
+        #shards = Hash(String, Int32).from_yaml(content)
+        shards = File.open(shard_yml) do |file|
+            YAML.parse(file)
+        end
+        Log.info { shards }
+        Log.info { shards["name"] }
+        Log.info { shards.as_h.has_key?("description") ? shards["description"] : "" }
+        Log.info { shards["dependencies"] }
+        # development_dependencies
+        Log.info { shards["version"] }
+        Log.info { shards["authors"] }
     end
     Log.info { data }
 
@@ -132,12 +155,16 @@ def get_options
     verbose = false
     limit = 0
     keep = false
+    url = nil
+    repos_file = nil
 
     OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
         parser.on("-v", "--verbose", "Verbose mode") { verbose = true }
         parser.on("--keep", "Keep temporary directory") { keep = true }
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| limit = value.to_i }
+        parser.on("--url=URL", "Process this GitHub URL") { |value| url = value }
+        parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| repos_file = value }
         parser.on("-h", "--help", "Show this help") do
             puts parser
             exit
@@ -153,5 +180,5 @@ def get_options
             exit(1)
         end
     end
-    return verbose, limit, keep
+    return verbose, limit, keep, url, repos_file
 end
