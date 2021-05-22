@@ -2,13 +2,15 @@ require "./spec_helper"
 
 describe "My Kemal App" do
   it "renders /" do
-    get "/"
-    # puts response # HTTP::Client::Response  https://crystal-lang.org/api/HTTP/Client/Response.html
-    response.status_code.should eq 200
-    #puts response.status_message
-    #puts response.headers
-    response.headers["Content-Type"].should eq "text/html"
-    response.body.should contain("<h1>Crystal Mine</h1>")
+    fixture(cleanup: true) do
+      get "/"
+      # puts response # HTTP::Client::Response  https://crystal-lang.org/api/HTTP/Client/Response.html
+      response.status_code.should eq 200
+      #puts response.status_message
+      #puts response.headers
+      response.headers["Content-Type"].should eq "text/html"
+      response.body.should contain("<h1>Crystal Mine</h1>")
+    end
   end
 
   it "renders /github" do
