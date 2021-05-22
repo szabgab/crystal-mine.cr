@@ -20,6 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         crystal -v
+        apt-get update
         apt-get install libsqlite3-dev
         shards install
 
