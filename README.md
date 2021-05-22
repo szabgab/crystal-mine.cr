@@ -2,6 +2,17 @@
 
 ## Setup
 
+On Ubuntu:
+```
+sudo apt-get install libsqlite3-dev
+sudo apt-get install sqlite3
+```
+
+```
+shards install
+```
+
+
 * Create a [Personal Access token](https://github.com/settings/tokens) with a name that you can easily recognize, e.g. "Crystal Mine Development Token" using the following rights:
 
 ```
@@ -16,6 +27,12 @@ user
 
 ```
 USERNAME:TOKEN
+```
+
+## Run tests
+
+```
+KEMAL_ENV=test crystal spec
 ```
 
 ## TODO
