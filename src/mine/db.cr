@@ -1,7 +1,6 @@
 require "log"
 require "sqlite3"
 
-
 def get_db_file
     db_file = "data.db"
     return db_file
@@ -31,6 +30,18 @@ def create_db
             )"
     end
 end
+
+# def get_id()
+#     DB.open "sqlite3://#{db_file}" do |db|
+#     rowid = nil
+#     db.query "SELECT id FROM shards WHERE host=? AND user_name=? AND repo_name=?",
+#         data["host"], data["user_name"], data["repo_name"] do |rs|
+#         rs.each do
+#             rowid = rs.read(Int32)
+#         end
+#     end
+#     return rowid
+# end
 
 def store_in_db(data)
     now = Time.utc

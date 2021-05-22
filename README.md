@@ -20,8 +20,8 @@ USERNAME:TOKEN
 
 ## TODO
 
-* Store parsed data in database
 * Create web interface to display data from database
+* Write tests to check the web interface
 * Move application inside Docker container and docker-compose
 * Deploy application
 

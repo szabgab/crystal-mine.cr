@@ -25,5 +25,9 @@ jobs:
     - name: Run ameba linter
       run: |
         ./bin/ameba
+      
+    - name: Run specs for web app
+      run: |
+        KEMAL_ENV=test crystal spec
 
 

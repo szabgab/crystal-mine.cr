@@ -8,10 +8,14 @@ description: |
   Experimenting with Crystal
 
 dependencies:
-   octokit:
-     github: watzon/octokit.cr
-   sqlite3:
-     github: crystal-lang/crystal-sqlite3
+  octokit:
+    github: watzon/octokit.cr
+  sqlite3:
+    github: crystal-lang/crystal-sqlite3
+  kemal:
+    github: kemalcr/kemal
+  spec-kemal:
+    github: kemalcr/spec-kemal
 
 development_dependencies:
   ameba:
