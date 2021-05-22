@@ -20,6 +20,7 @@ jobs:
     - name: Install dependencies
       run: |
         crystal -v
+        sudo apt-get install libsqlite3-dev
         shards install
 
     - name: Run ameba linter
