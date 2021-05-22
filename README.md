@@ -36,3 +36,5 @@ USERNAME:TOKEN
 * Allow people to ask to be excluded (a config file in the mine or in their own GitHub repo?)
 * List dependencies based on the shard.yml and based on the actual usage, link to dependencies, list reverse dependencies
 
+* Be able to easily find the documentation or link to documentation of packages. e.g. HTTP::Client::Response
+

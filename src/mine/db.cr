@@ -3,6 +3,9 @@ require "sqlite3"
 
 def get_db_file
     db_file = "data.db"
+    if ENV.has_key?("MINE_DB")
+        db_file =  ENV["MINE_DB"]
+    end
     return db_file
 end
 
@@ -31,17 +34,20 @@ def create_db
     end
 end
 
-# def get_id()
-#     DB.open "sqlite3://#{db_file}" do |db|
-#     rowid = nil
-#     db.query "SELECT id FROM shards WHERE host=? AND user_name=? AND repo_name=?",
-#         data["host"], data["user_name"], data["repo_name"] do |rs|
-#         rs.each do
-#             rowid = rs.read(Int32)
-#         end
-#     end
-#     return rowid
-# end
+def get_project(host, user_name, repo_name)
+    db_file = get_db_file
+    row = {} of String => String|Int32|Bool
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "SELECT id, host FROM shards WHERE host=? AND user_name=? AND repo_name=?",
+            host, user_name, repo_name do |rs|
+            rs.each do
+                row["id"] = rs.read(Int32)
+                row["host"] = rs.read(String)
+            end
+        end
+    end
+    return row
+end
 
 def store_in_db(data)
     now = Time.utc
