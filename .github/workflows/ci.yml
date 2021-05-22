@@ -21,6 +21,7 @@ jobs:
       run: |
         crystal -v
         apt-get update
+        apt-get install sqlite3
         apt-get install libsqlite3-dev
         shards install
 
