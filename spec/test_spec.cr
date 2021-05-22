@@ -48,5 +48,5 @@ describe "My Kemal App" do
       response.body.should contain(%{We don't know about this project})
     end
   end
-  
+
 end
