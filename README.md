@@ -22,6 +22,10 @@ USERNAME:TOKEN
 
 * Create web interface to display data from database
 * Write tests to check the web interface
+* Use templates
+* List all the names on the front page
+
+
 * Move application inside Docker container and docker-compose
 * Deploy application
 

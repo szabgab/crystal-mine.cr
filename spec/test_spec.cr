@@ -1,5 +1,12 @@
 require "./spec_helper"
 
+# describe "My Kemal App" do
+#   it "renders /" do
+#     empty_fixture(cleanup: true) do
+#     end
+#   end
+
+
 describe "My Kemal App" do
   it "renders /" do
     fixture(cleanup: true) do

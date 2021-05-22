@@ -49,20 +49,20 @@ def get_project(host, user_name, repo_name)
     return row
 end
 
+# def get_all()
+#     db_file = get_db_file
+#     DB.open "sqlite3://#{db_file}" do |db|
+#     end
+# end
+
 def store_in_db(data)
     now = Time.utc
 
-    #res = nil
+    project = get_project(data["host"], data["user_name"], data["repo_name"])
+    rowid = project["id"]
+
     db_file = get_db_file
     DB.open "sqlite3://#{db_file}" do |db|
-        rowid = nil
-        db.query "SELECT id FROM shards WHERE host=? AND user_name=? AND repo_name=?",
-            data["host"], data["user_name"], data["repo_name"] do |rs|
-            rs.each do
-                rowid = rs.read(Int32)
-            end
-        end
-
         Log.info { "Row ID #{rowid}" }
         if rowid.nil?
             res = db.exec "INSERT INTO shards
