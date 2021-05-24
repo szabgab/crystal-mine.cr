@@ -1,2 +1,5 @@
 Style/RedundantReturn:
   Enabled: false
+Lint/UselessAssign:
+  Excluded:
+  - src/webapp.cr

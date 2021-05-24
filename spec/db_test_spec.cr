@@ -2,16 +2,21 @@ require "./spec_helper"
 
 describe "Database" do
     it "get_all" do
+        no_db_fixture(cleanup: true) do
+          expect_raises(SQLite3::Exception, "no such table: shards") do
+            get_all()
+          end
+        end
+
         empty_db_fixture(cleanup: true) do
             res = get_all()
             res.empty?.should be_true
         end
 
         db_fixture(cleanup: true) do
-            expected = [{"id" => 1, "host" => "github.com", "user_name" => "szabgab", "repo_name" => "crystal-mine.cr", "name" => "Crystal Mine"}, {"id" => 2, "host" => "github.com", "user_name" => "watzon", "repo_name" => "octokit.cr", "name" => "octokit"}, {"id" => 3, "host" => "github.com", "user_name" => "luckyframework", "repo_name" => "lucky", "name" => "lucky"}, {"id" => 4, "host" => "github.com", "user_name" => "soveran", "repo_name" => "toro", "name" => "toro"}]
             res = get_all()
             # puts res
-            res.should eq expected
+            res.should eq full_database
         end
     end
 

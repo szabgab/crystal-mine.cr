@@ -121,7 +121,7 @@ def process(url, root)
         # development_dependencies
         #Log.info { shards["authors"] }
     end
-    Log.info { data }
+    Log.info { "data: #{data}" }
     rows_affected, last_insert_id = store_in_db(data)
     Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
