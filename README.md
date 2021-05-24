@@ -46,13 +46,13 @@ KEMAL_ENV=test crystal spec/db_test_spec.cr
 ## Data Collecion:
 
 ```
-crystal mine.cr --url https://github.com/szabgab/crystal-mine.cr
+crystal src/mine.cr --url https://github.com/szabgab/crystal-mine.cr
 ```
 
 Or create a file with a list of repo URLs and then call
 
 ```
-crystal mine.cr --repos repos.txt
+crystal src/mine.cr --repos repos.txt
 ```
 
 ## Web application
