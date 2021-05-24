@@ -49,11 +49,21 @@ def get_project(host, user_name, repo_name)
     return row
 end
 
-# def get_all()
-#     db_file = get_db_file
-#     DB.open "sqlite3://#{db_file}" do |db|
-#     end
-# end
+def get_all()
+    db_file = get_db_file
+    results = [] of Hash(String, String|Int32|Bool)
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "SELECT id, host FROM shards" do |rs|
+            rs.each do
+                row = {} of String => String|Int32|Bool
+                row["id"] = rs.read(Int32)
+                row["host"] = rs.read(String)
+                results.push(row)
+            end
+        end
+    end
+    results
+end
 
 def store_in_db(data)
     now = Time.utc

@@ -3,7 +3,7 @@ require "../src/webapp"
 
 require "file_utils"
 
-def empty_fixture(cleanup = true)
+def no_db_fixture(cleanup = true)
     tempfile = File.tempname
     #puts tempfile
     begin
@@ -17,8 +17,15 @@ def empty_fixture(cleanup = true)
     end
 end
 
-def fixture(cleanup = true)
-  empty_fixture(cleanup: cleanup) do |tempfile|
+def empty_db_fixture(cleanup = true)
+  no_db_fixture(cleanup: cleanup) do |tempfile|
+    create_db
+    yield
+  end
+end
+
+def db_fixture(cleanup = true)
+  no_db_fixture(cleanup: cleanup) do |tempfile|
     # load data into temporary database
     # TODO eliminate the need for the sqlite3 cli
     res = system("sqlite3 #{tempfile} < spec/data.sql")
