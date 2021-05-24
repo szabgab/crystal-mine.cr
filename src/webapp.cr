@@ -3,11 +3,12 @@ require "./mine/db"
 
 
 get "/" do
+  shards = get_all
   render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
 
 
-get "/github/:user_name/:repo_name" do |env|
+get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
   user_name = env.params.url["user_name"]
   repo_name = env.params.url["repo_name"]

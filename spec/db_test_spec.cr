@@ -8,9 +8,9 @@ describe "Database" do
         end
 
         db_fixture(cleanup: true) do
-            expected = [{"id" => 3, "host" => "github.com"}, {"id" => 4, "host" => "github.com"}, {"id" => 1, "host" => "github.com"}, {"id" => 2, "host" => "github.com"}]
+            expected = [{"id" => 1, "host" => "github.com", "user_name" => "szabgab", "repo_name" => "crystal-mine.cr", "name" => "Crystal Mine"}, {"id" => 2, "host" => "github.com", "user_name" => "watzon", "repo_name" => "octokit.cr", "name" => "octokit"}, {"id" => 3, "host" => "github.com", "user_name" => "luckyframework", "repo_name" => "lucky", "name" => "lucky"}, {"id" => 4, "host" => "github.com", "user_name" => "soveran", "repo_name" => "toro", "name" => "toro"}]
             res = get_all()
-            #puts res
+            # puts res
             res.should eq expected
         end
     end
