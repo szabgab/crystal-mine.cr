@@ -2,7 +2,8 @@
 
 ## Setup
 
-On Ubuntu:
+### On Ubuntu:
+
 ```
 sudo apt-get install libsqlite3-dev
 sudo apt-get install sqlite3
@@ -35,27 +36,14 @@ USERNAME:TOKEN
 KEMAL_ENV=test crystal spec
 ```
 
-## TODO
+## Collect 
 
-* Create web interface to display data from database
-* Write tests to check the web interface
-* Use templates
-* List all the names on the front page
+```
+crystal mine.cr --url https://github.com/szabgab/crystal-mine.cr
+```
 
+Or create a file with a list of repo URLs and then call
 
-* Move application inside Docker container and docker-compose
-* Deploy application
-
-* Fetch all the Crystal projects from Github (waiting for watzon/octokit.cr or using plain api request)
-
-
-* Allow user to search database (name of the project, description)
-* Show last-modified based on GitHub
-* Create a cross reference with the authors
-* Create a page with the pictures of the authors
-* Collect all the contributors as well and show them as well
-* Allow people to ask to be excluded (a config file in the mine or in their own GitHub repo?)
-* List dependencies based on the shard.yml and based on the actual usage, link to dependencies, list reverse dependencies
-
-* Be able to easily find the documentation or link to documentation of packages. e.g. HTTP::Client::Response
-
+```
+crystal mine.cr --repos repos.txt
+```
