@@ -16,7 +16,7 @@ describe "Collect" do
         end
     end
 
-    it "collect from scratch" do
+    it "collect one entry after creating db" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--url", "https://github.com/szabgab/crystal-mine.cr" ])
             exit_code.should eq 0
@@ -28,12 +28,23 @@ describe "Collect" do
         end
     end
 
-    it "collect from scratch" do
+    it "collect one entry into existing database where entry already exists" do
         db_fixture(cleanup: true) do
             res = get_all()
             res.should eq full_database
 
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--url", "https://github.com/szabgab/crystal-mine.cr" ])
+            exit_code.should eq 0
+            stderr.should eq ""
+            stdout.should eq ""
+            res = get_all()
+            res.should eq full_database
+        end
+    end
+
+    it "collect from repos.txt file into empty database" do
+        no_db_fixture(cleanup: true) do
+            stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--repos", "repos.txt" ])
             exit_code.should eq 0
             stderr.should eq ""
             stdout.should eq ""
