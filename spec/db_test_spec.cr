@@ -27,5 +27,4 @@ describe "Database" do
         proj.should eq exp
       end
     end
-end  
-  
+end

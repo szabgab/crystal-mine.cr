@@ -18,7 +18,7 @@ def no_db_fixture(cleanup = true)
 end
 
 def empty_db_fixture(cleanup = true)
-  no_db_fixture(cleanup: cleanup) do |tempfile|
+  no_db_fixture(cleanup: cleanup) do
     create_db
     yield
   end
