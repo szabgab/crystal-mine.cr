@@ -3,9 +3,8 @@ require "./mine/db"
 
 
 get "/" do
-  "<h1>Crystal Mine</h1>"
+  render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
-
 
 
 get "/github/:user_name/:repo_name" do |env|
@@ -16,8 +15,7 @@ get "/github/:user_name/:repo_name" do |env|
   if project.empty?
     halt env, status_code: 404, response: "We don't know about this project"
   end
-
-  %{<a href="https://github.com/#{user_name}/#{repo_name}">#{user_name}/#{repo_name}</a>}
+  render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end
 
 Kemal.run
