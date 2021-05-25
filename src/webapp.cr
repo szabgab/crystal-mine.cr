@@ -1,5 +1,9 @@
 require "kemal"
 require "./mine/db"
+#require "digest/md5"
+#email = ARGV[0]
+#code = Digest::MD5.hexdigest(email)
+#puts "https://www.gravatar.com/avatar/#{code}?s=100&d=blank"
 
 title = ""
 
