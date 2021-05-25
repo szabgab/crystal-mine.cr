@@ -105,6 +105,14 @@ def process(url, root)
     # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
     data["github_actions"] = File.exists?(Path.new(path, ".github", "workflows").to_s)
 
+    handle_shard_yml(data, path)
+
+    Log.info { "data: #{data}" }
+    rows_affected, last_insert_id = store_in_db(data)
+    Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
+end
+
+def handle_shard_yml(data, path)
     shard_yml = Path.new(path, "shard.yml").to_s
     data["shard_yml"] = File.exists?(shard_yml)
 
@@ -121,9 +129,6 @@ def process(url, root)
         # development_dependencies
         #Log.info { shards["authors"] }
     end
-    Log.info { "data: #{data}" }
-    rows_affected, last_insert_id = store_in_db(data)
-    Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
 
 
