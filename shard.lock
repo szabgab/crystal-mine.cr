@@ -36,6 +36,10 @@ shards:
     git: https://github.com/luislavena/radix.git
     version: 0.4.1
 
+  sentry:
+    git: https://github.com/samueleaton/sentry.git
+    version: 0.4.0
+
   spec-kemal:
     git: https://github.com/kemalcr/spec-kemal.git
     version: 1.0.0

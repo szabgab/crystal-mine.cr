@@ -62,6 +62,18 @@ crystal src/mine.cr --repos spec/many_repos.txt
 crystal run src/webapp.cr
 ```
 
+Build sentry:
+
+```
+crystal build --release lib/sentry/src/sentry_cli.cr -o ./bin/sentry
+```
+
+Run with sentry
+
+```
+./bin/sentry -b "crystal build src/webapp.cr -o bin/webapp" -r bin/webapp
+```
+
 
 ## CSS
 

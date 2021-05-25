@@ -20,5 +20,7 @@ dependencies:
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
+  sentry:
+    github: samueleaton/sentry
 
 license: MIT
