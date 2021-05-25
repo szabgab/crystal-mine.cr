@@ -60,3 +60,13 @@ crystal src/mine.cr --repos repos.txt
 ```
 crystal run src/webapp.cr
 ```
+
+
+## CSS
+
+Generate CSS file (public/bulma.css) from SCSS file (sass/mystles.scss):
+
+```
+npm install
+npm run css-build
+```

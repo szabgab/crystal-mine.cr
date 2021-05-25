@@ -4,10 +4,49 @@
   <meta charset="utf-8">
   <meta name="viewport"
      content="width=device-width, initial-scale=1, user-scalable=yes">
+  <link href="/bulma.css" rel="stylesheet" >
      <title><%= title %></title>
 </head>
 <body>
-<%= content %>
- 
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      Mine
+      <!-- <img src="/d-b-224x56.png" width="112" height="28"> -->
+    </a>
+
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+
+  <div id="stats" class="navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/stats">
+        Stats
+      </a>
+    </div>
+  </div>
+
+  <div id="about-right" class="nav-right navbar-menu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/about">
+        About
+      </a>
+    </div>
+  </div>
+
+</nav>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title"><%= title %></h1>
+  </div>
+
+  <%= content %>
+</section>
+
 </body>
 </html>

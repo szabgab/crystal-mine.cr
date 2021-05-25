@@ -2,3 +2,4 @@ config.txt
 lib/
 bin/
 data.db
+node_modules/
