@@ -55,6 +55,7 @@ def process_wrapper(url, root)
     process url, root
 rescue err
     Log.error { "There was an exception in #{url} #{err}" }
+    Log.error { err.backtrace }
 end
 
 def process(url, root)
@@ -113,22 +114,26 @@ def process(url, root)
 end
 
 def handle_shard_yml(data, path)
-    shard_yml = Path.new(path, "shard.yml").to_s
-    data["shard_yml"] = File.exists?(shard_yml)
+    shard_yml_file = Path.new(path, "shard.yml").to_s
+    data["shard_yml"] = File.exists?(shard_yml_file)
 
     Log.info { "Handling shard.yml" }
-    if File.exists?(shard_yml)
-        shards = File.open(shard_yml) do |file|
+    if data["shard_yml"]
+        shards_yml = File.open(shard_yml_file) do |file|
             YAML.parse(file)
         end
-        Log.info { shards }
-        ["name", "description", "version"].each {|field|
-            data[field] = shards.as_h.has_key?(field) ? shards[field].to_s : ""
-        }
-        #Log.info { shards["dependencies"] }
-        # development_dependencies
-        #Log.info { shards["authors"] }
+        Log.info { shards_yml }
+        shards = shards_yml.as_h
+    else
+        shards = {} of String => String|Int32|Bool
     end
+
+    ["name", "description", "version"].each {|field|
+        data[field] = shards.has_key?(field) ? shards[field].to_s : ""
+    }
+    #Log.info { shards["dependencies"] }
+    # development_dependencies
+    #Log.info { shards["authors"] }
 end
 
 
