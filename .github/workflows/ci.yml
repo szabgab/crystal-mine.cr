@@ -31,6 +31,6 @@ jobs:
       
     - name: Run specs for web app
       run: |
-        KEMAL_ENV=test crystal spec
+        crystal spec
 
 

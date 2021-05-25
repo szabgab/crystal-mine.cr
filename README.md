@@ -33,7 +33,7 @@ USERNAME:TOKEN
 ## Run tests
 
 ```
-KEMAL_ENV=test crystal spec
+crystal spec
 ```
 
 Run test files separately
