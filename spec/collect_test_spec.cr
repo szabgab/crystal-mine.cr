@@ -14,9 +14,9 @@ describe "Collect" do
     it "collect nothing" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr" ])
-            exit_code.should eq 0 # TODO: probably should be something else
             stderr.should eq ""
             stdout.should contain("ERROR - Neither --url nor --repos was provided")
+            exit_code.should eq 0 # TODO: probably should be something else
             res = get_all()
             res.empty?.should be_true
         end
@@ -25,9 +25,9 @@ describe "Collect" do
     it "collect one entry after creating db" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--url", "https://github.com/szabgab/crystal-mine.cr" ])
-            exit_code.should eq 0
             stderr.should eq ""
             stdout.should eq ""
+            exit_code.should eq 0
             res = get_all()
             clean(res)
             expected = [full_database[0]]
@@ -42,9 +42,9 @@ describe "Collect" do
             res.should eq full_database
 
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--url", "https://github.com/szabgab/crystal-mine.cr" ])
-            exit_code.should eq 0
             stderr.should eq ""
             stdout.should eq ""
+            exit_code.should eq 0
             res = get_all()
             clean(res)
             expected = full_database
@@ -56,9 +56,9 @@ describe "Collect" do
     it "collect from repos.txt file into empty database" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--repos", "spec/repos.txt" ])
-            exit_code.should eq 0
             stderr.should eq ""
             stdout.should eq ""
+            exit_code.should eq 0
             res = get_all()
             clean(res)
             expected = full_database

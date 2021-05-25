@@ -2,7 +2,7 @@ require "log"
 require "sqlite3"
 
 
-FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions"
+FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions, crystal, license"
 
 def get_db_file
     db_file = "data.db"
@@ -32,8 +32,21 @@ def create_db
             shard_yml BOOL,
             travis_ci BOOL,
             github_actions BOOL,
+            crystal TEXT,
+            license TEXT,
             UNIQUE (host, user_name, repo_name)
             )"
+        db.exec "CREATE TABLE authors (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            email TEXT,
+            UNIQUE (email)
+            )"
+        db.exec "CREATE TABLE author_of_shard (
+            shards_id INTEGER,
+            authors_id INTEGER,
+            UNIQUE (shards_id, authors_id)
+        )"
     end
 end
 
@@ -65,6 +78,8 @@ def parse_row(rs)
     row["shard_yml"] = rs.read(Bool)
     row["travis_ci"] = rs.read(Bool)
     row["github_actions"] = rs.read(Bool)
+    row["crystal"] = rs.read(String)
+    row["license"] = rs.read(String)
     return row
 end
 
@@ -102,7 +117,9 @@ def store_in_db(data)
                 version=?,
                 travis_ci=?,
                 github_actions=?,
-                shard_yml=?
+                shard_yml=?,
+                crystal=?,
+                license=?
                 WHERE id=?",
 
                 data["host"],
@@ -115,6 +132,8 @@ def store_in_db(data)
                 data["travis_ci"],
                 data["github_actions"],
                 data["shard_yml"],
+                data["crystal"],
+                data["license"],
                 rowid
 
             Log.info { "res #{res}" }
@@ -122,8 +141,8 @@ def store_in_db(data)
         else
             Log.info { "New Row" }
             res = db.exec "INSERT INTO shards
-                (host, user_name, repo_name, record_last_updated, name, description, version, travis_ci, github_actions, shard_yml)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (host, user_name, repo_name, record_last_updated, name, description, version, travis_ci, github_actions, shard_yml, crystal, license)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 data["host"],
                 data["user_name"],
                 data["repo_name"],
@@ -133,7 +152,9 @@ def store_in_db(data)
                 data["version"],
                 data["travis_ci"],
                 data["github_actions"],
-                data["shard_yml"]
+                data["shard_yml"],
+                data["crystal"],
+                data["license"]
 
             Log.info { "res #{res}" }
             return res.rows_affected, res.last_insert_id

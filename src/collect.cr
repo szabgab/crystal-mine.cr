@@ -125,15 +125,50 @@ def handle_shard_yml(data, path)
         Log.info { shards_yml }
         shards = shards_yml.as_h
     else
-        shards = {} of String => String|Int32|Bool
+        ["name", "description", "version", "crystal", "license"].each {|field|
+            data[field] = ""
+        }
+        return
+        #shards = {} of String => String|Int32|Bool
     end
+    handled_fields = Set{"name", "description", "version", "dependencies", "development_dependencies", "authors", "crystal", "license"}
+    handled_fields.concat(Set{"targets", "scripts"}) # TODO: handle these fields
 
-    ["name", "description", "version"].each {|field|
+    shards.each_key {|field|
+        if ! handled_fields.includes?(field)
+            Log.error { "Unhandled field #{field}" }
+        end
+    }
+
+    ["name", "description", "version", "crystal", "license"].each {|field|
         data[field] = shards.has_key?(field) ? shards[field].to_s : ""
     }
-    #Log.info { shards["dependencies"] }
-    # development_dependencies
-    #Log.info { shards["authors"] }
+    # crystal ">=0.36.1, < 2.0.0"
+
+    ["targets", "scripts"].each {|field|
+        if shards.has_key?(field)
+            Log.info { %{field: #{field} values #{shards[field]}} }
+        end
+    }
+
+    # TODO: what shall we do with the "name" part?
+    # name:
+    #   github: user_name/repo_name
+    #   version:
+
+    ["dependencies", "development_dependencies"].each {|field|
+        if shards.has_key?(field)
+            Log.info { %{field: #{field} values #{shards[field]}} }
+        end
+    }
+
+    if shards.has_key?("authors")
+        Log.info { %{Authors #{shards["authors"]}} }
+        shards["authors"].as_a.each {|author|
+            # "Foo Bar <foo@bar.com>"
+            Log.info { "author: #{author}" }
+        }
+    end
 end
 
 

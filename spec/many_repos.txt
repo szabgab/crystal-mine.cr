@@ -1,0 +1,15 @@
+https://github.com/amberframework/amber
+https://github.com/ffwff/lilith
+https://github.com/hkalexling/Mango
+https://github.com/iv-org/invidious
+https://github.com/jeromegn/slang
+https://github.com/kemalcr/kemal
+https://github.com/kostya/myhtml
+https://github.com/luckyframework/avram
+https://github.com/luckyframework/lucky
+https://github.com/mint-lang/mint
+https://github.com/soveran/toro
+https://github.com/spider-gazelle/spider-gazelle
+https://github.com/szabgab/crystal-mine.cr
+https://github.com/veelenga/awesome-crystal
+https://github.com/watzon/octokit.cr

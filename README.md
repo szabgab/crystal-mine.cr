@@ -52,7 +52,8 @@ crystal src/mine.cr --url https://github.com/szabgab/crystal-mine.cr
 Or create a file with a list of repo URLs and then call
 
 ```
-crystal src/mine.cr --repos repos.txt
+crystal src/mine.cr --repos spec/repos.txt
+crystal src/mine.cr --repos spec/many_repos.txt
 ```
 
 ## Web application
