@@ -17,7 +17,18 @@ describe "Web Application with empty database" do
       response.status_code.should eq 200
       response.headers["Content-Type"].should eq "text/html"
       response.body.should contain("<title>About Crystal Mine</title>")
-      response.body.should contain("<h1>About Crystal Mine</h1>")
+      response.body.should contain(%{<h1 class="title">About Crystal Mine</h1>})
+      #puts response.body # TODO check title
+    end
+  end
+
+  it "renders /stats" do
+    empty_db_fixture(cleanup: true) do
+      get "/stats"
+      response.status_code.should eq 200
+      response.headers["Content-Type"].should eq "text/html"
+      response.body.should contain("<title>Statistics</title>")
+      response.body.should contain(%{<h1 class="title">Statistics</h1>})
       #puts response.body # TODO check title
     end
   end
