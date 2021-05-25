@@ -76,7 +76,7 @@ npm run css-build
 1. Add to database schema (in db)
 1. Add to store_in_db (in db)
 1. Remove old `data.db`
-1. Run collect `crystal src/mine.cr --repos repos.txt --verbose`
+1. Run collect `crystal src/mine.cr --repos spec/repos.txt --verbose`
 1. Dump data using `echo .dump | sqlite3 data.db > spec/data.sql`
 1. Add columns to `FIELDS` and to `parse_row`
 1. Add columns to the display template

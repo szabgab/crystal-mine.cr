@@ -55,7 +55,7 @@ describe "Collect" do
 
     it "collect from repos.txt file into empty database" do
         no_db_fixture(cleanup: true) do
-            stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--repos", "repos.txt" ])
+            stdout, stderr, exit_code = capture(crystal, ["src/mine.cr", "--repos", "spec/repos.txt" ])
             exit_code.should eq 0
             stderr.should eq ""
             stdout.should eq ""
