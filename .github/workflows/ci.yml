@@ -25,9 +25,9 @@ jobs:
         apt-get install libsqlite3-dev
         shards install
 
-    - name: Run ameba linter
-      run: |
-        ./bin/ameba
+    # - name: Run ameba linter
+    #   run: |
+    #     ./bin/ameba
       
     - name: Run specs for web app
       run: |
