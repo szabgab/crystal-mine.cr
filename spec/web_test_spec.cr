@@ -7,7 +7,7 @@ describe "Web Application with empty database" do
       response.status_code.should eq 200
       response.headers["Content-Type"].should eq "text/html"
       response.body.should contain("<title>Welcome to the Crystal Mine</title>")
-      response.body.should contain("<h1>Crystal Mine</h1>")
+      response.body.should contain(%{<h1 class="title">Welcome to the Crystal Mine</h1>})
     end
   end
 
@@ -43,7 +43,7 @@ describe "Web Application with content" do
       #puts response.headers
       response.headers["Content-Type"].should eq "text/html"
       response.body.should contain("<title>Welcome to the Crystal Mine</title>")
-      response.body.should contain("<h1>Crystal Mine</h1>")
+      response.body.should contain(%{<h1 class="title">Welcome to the Crystal Mine</h1>})
       response.body.should contain(%{<li><a href="/github.com/szabgab/crystal-mine.cr">szabgab/crystal-mine.cr</a> - Crystal Mine</li>})
       #puts response.body
     end

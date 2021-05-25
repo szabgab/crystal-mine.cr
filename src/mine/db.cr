@@ -1,6 +1,9 @@
 require "log"
 require "sqlite3"
 
+
+FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version"
+
 def get_db_file
     db_file = "data.db"
     if ENV.has_key?("MINE_DB")
@@ -38,14 +41,27 @@ def get_project(host, user_name, repo_name)
     db_file = get_db_file
     row = {} of String => String|Int32|Bool
     DB.open "sqlite3://#{db_file}" do |db|
-        db.query "SELECT id, host FROM shards WHERE host=? AND user_name=? AND repo_name=?",
+        db.query "SELECT #{FIELDS} FROM shards WHERE host=? AND user_name=? AND repo_name=?",
             host, user_name, repo_name do |rs|
             rs.each do
-                row["id"] = rs.read(Int32)
-                row["host"] = rs.read(String)
+                # TODO it is a loop but there should be only one result (or maybe none) how to improve?
+                row = parse_row(rs)
             end
         end
     end
+    return row
+end
+
+def parse_row(rs)
+    row = {} of String => String|Int32|Bool
+    row["id"] = rs.read(Int32)
+    row["host"] = rs.read(String)
+    row["user_name"] = rs.read(String)
+    row["repo_name"] = rs.read(String)
+    row["name"] = rs.read(String)
+    row["record_last_updated"] = rs.read(String) # TODO date
+    row["description"] = rs.read(String)
+    row["version"] = rs.read(String)
     return row
 end
 
@@ -53,14 +69,9 @@ def get_all()
     db_file = get_db_file
     results = [] of Hash(String, String|Int32|Bool)
     DB.open "sqlite3://#{db_file}" do |db|
-        db.query "SELECT id, host, user_name, repo_name, name FROM shards" do |rs|
+        db.query "SELECT #{FIELDS} FROM shards" do |rs|
             rs.each do
-                row = {} of String => String|Int32|Bool
-                row["id"] = rs.read(Int32)
-                row["host"] = rs.read(String)
-                row["user_name"] = rs.read(String)
-                row["repo_name"] = rs.read(String)
-                row["name"] = rs.read(String)
+                row = parse_row(rs)
                 results.push(row)
             end
         end

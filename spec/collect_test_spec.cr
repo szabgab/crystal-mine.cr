@@ -4,6 +4,12 @@ require "../src/collect"
 # TODO is there some way to get to the current crystal executable?
 crystal = "crystal"
 
+def clean(items)
+    items.each {|item|
+        item.delete("record_last_updated")
+    }
+end
+
 describe "Collect" do
     it "collect nothing" do
         no_db_fixture(cleanup: true) do
@@ -23,7 +29,9 @@ describe "Collect" do
             stderr.should eq ""
             stdout.should eq ""
             res = get_all()
-            expected = [{"id" => 1, "host" => "github.com", "user_name" => "szabgab", "repo_name" => "crystal-mine.cr", "name" => "Crystal Mine"}]
+            clean(res)
+            expected = [full_database[0]]
+            clean(expected)
             res.should eq expected
         end
     end
@@ -38,7 +46,10 @@ describe "Collect" do
             stderr.should eq ""
             stdout.should eq ""
             res = get_all()
-            res.should eq full_database
+            clean(res)
+            expected = full_database
+            clean(expected)
+            res.should eq expected
         end
     end
 
@@ -49,7 +60,10 @@ describe "Collect" do
             stderr.should eq ""
             stdout.should eq ""
             res = get_all()
-            res.should eq full_database
+            clean(res)
+            expected = full_database
+            clean(expected)
+            res.should eq expected
         end
     end
 

@@ -28,8 +28,8 @@ describe "Database" do
 
 
         proj = get_project("github.com", "szabgab", "crystal-mine.cr")
-        exp = {"id" => 1, "host" => "github.com"}
-        proj.should eq exp
+        #exp = full_database[0]
+        proj.should eq full_database[0]
       end
     end
 end

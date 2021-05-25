@@ -5,7 +5,7 @@ require "../src/webapp"
 require "file_utils"
 
 def full_database()
-  return [{"id" => 1, "host" => "github.com", "user_name" => "szabgab", "repo_name" => "crystal-mine.cr", "name" => "Crystal Mine"}, {"id" => 2, "host" => "github.com", "user_name" => "watzon", "repo_name" => "octokit.cr", "name" => "octokit"}, {"id" => 3, "host" => "github.com", "user_name" => "luckyframework", "repo_name" => "lucky", "name" => "lucky"}, {"id" => 4, "host" => "github.com", "user_name" => "soveran", "repo_name" => "toro", "name" => "toro"}]
+  return [{"id" => 1, "host" => "github.com", "user_name" => "szabgab", "repo_name" => "crystal-mine.cr", "name" => "Crystal Mine", "record_last_updated" => "2021-05-21 14:14:55.042", "description" => "Experimenting with Crystal\n", "version" => "0.0.1"}, {"id" => 2, "host" => "github.com", "user_name" => "watzon", "repo_name" => "octokit.cr", "name" => "octokit", "record_last_updated" => "2021-05-21 14:14:56.884", "description" => "", "version" => "0.1.0"}, {"id" => 3, "host" => "github.com", "user_name" => "luckyframework", "repo_name" => "lucky", "name" => "lucky", "record_last_updated" => "2021-05-21 14:14:58.010", "description" => "", "version" => "0.27.2"}, {"id" => 4, "host" => "github.com", "user_name" => "soveran", "repo_name" => "toro", "name" => "toro", "record_last_updated" => "2021-05-21 14:14:58.883", "description" => "", "version" => "0.4.2"}]
 end
 
 
