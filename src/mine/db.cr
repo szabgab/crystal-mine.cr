@@ -2,7 +2,7 @@ require "log"
 require "sqlite3"
 
 
-FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version"
+FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions"
 
 def get_db_file
     db_file = "data.db"
@@ -31,7 +31,7 @@ def create_db
             version TEXT,
             shard_yml BOOL,
             travis_ci BOOL,
-            github_actions_ci BOOL,
+            github_actions BOOL,
             UNIQUE (host, user_name, repo_name)
             )"
     end
@@ -62,6 +62,9 @@ def parse_row(rs)
     row["record_last_updated"] = rs.read(String) # TODO date
     row["description"] = rs.read(String)
     row["version"] = rs.read(String)
+    row["shard_yml"] = rs.read(Bool)
+    row["travis_ci"] = rs.read(Bool)
+    row["github_actions"] = rs.read(Bool)
     return row
 end
 
@@ -96,7 +99,10 @@ def store_in_db(data)
                 record_last_updated=?,
                 name=?,
                 description=?,
-                version=?
+                version=?,
+                travis_ci=?,
+                github_actions=?,
+                shard_yml=?
                 WHERE id=?",
 
                 data["host"],
@@ -106,6 +112,9 @@ def store_in_db(data)
                 data["name"],
                 data["description"],
                 data["version"],
+                data["travis_ci"],
+                data["github_actions"],
+                data["shard_yml"],
                 rowid
 
             Log.info { "res #{res}" }
@@ -113,15 +122,18 @@ def store_in_db(data)
         else
             Log.info { "New Row" }
             res = db.exec "INSERT INTO shards
-                (host, user_name, repo_name, record_last_updated, name, description, version)
-                VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (host, user_name, repo_name, record_last_updated, name, description, version, travis_ci, github_actions, shard_yml)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 data["host"],
                 data["user_name"],
                 data["repo_name"],
                 now,
                 data["name"],
                 data["description"],
-                data["version"]
+                data["version"],
+                data["travis_ci"],
+                data["github_actions"],
+                data["shard_yml"]
 
             Log.info { "res #{res}" }
             return res.rows_affected, res.last_insert_id
