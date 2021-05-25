@@ -1,17 +1,23 @@
 require "kemal"
 require "./mine/db"
 
+title = ""
 
 get "/" do
+  title = "Welcome to the Crystal Mine"
   shards = get_all
   render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
 
+get "/about" do
+  render "src/views/about.ecr", "src/views/layouts/layout.ecr"
+end
 
 get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
   user_name = env.params.url["user_name"]
   repo_name = env.params.url["repo_name"]
+  title = "#{user_name}/#{repo_name}"
   project = get_project(host, user_name, repo_name)
   if project.empty?
     halt env, status_code: 404, response: "We don't know about this project"
