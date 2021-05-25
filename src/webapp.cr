@@ -13,6 +13,10 @@ get "/about" do
   render "src/views/about.ecr", "src/views/layouts/layout.ecr"
 end
 
+get "/stats" do
+  render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
+end
+
 get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
   user_name = env.params.url["user_name"]
