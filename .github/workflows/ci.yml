@@ -17,13 +17,16 @@ jobs:
     - name: Checkout this repo
       uses: actions/checkout@v2
 
-    - name: Install dependencies
+    - name: Install external dependencies
       run: |
         crystal -v
         apt-get update
         apt-get install sqlite3
         apt-get install libsqlite3-dev
-        shards install
+
+    - name: Install shards
+      run: |
+        shards install --ignore-crystal-version
 
     # - name: Run ameba linter
     #   run: |
