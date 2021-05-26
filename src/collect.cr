@@ -3,6 +3,7 @@ require "log"
 require "uri"
 require "option_parser"
 require "yaml"
+require "../lib/shards/src/spec"
 require "./mine/db"
 
 def mine
@@ -58,6 +59,14 @@ rescue err
     Log.error { err.backtrace }
 end
 
+
+def parse_url(url)
+    uri = URI.parse url.gsub(/\.git$/, "")
+    host = uri.host.to_s
+    user_name, repo_name = uri.path[1..].split("/")
+    return host, user_name, repo_name
+end
+
 def process(url, root)
     Log.info { "Process URL '#{url}' directory #{root}" }
     # https://github.com/szabgab/crystal-mine.cr
@@ -72,9 +81,7 @@ def process(url, root)
     # We would like to clone this and make sure it is in a unique directory called github.com/szabgab/crystal-mine.cr
     # As other repositories might have the same name and at one point alternative hosting might be supported as well
     # e.g. GitLab, Bitbucket etc.
-    uri = URI.parse url
-    host = uri.host.to_s
-    user_name, repo_name = uri.path[1..].split("/")
+    host, user_name, repo_name = parse_url(url)
     # puts typeof(root)
     # puts typeof(host)
     # puts typeof(user_name)
@@ -113,66 +120,59 @@ def process(url, root)
     Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
 
-def handle_shard_yml(data, path)
-    shard_yml_file = Path.new(path, "shard.yml").to_s
-    data["shard_yml"] = File.exists?(shard_yml_file)
-
+def handle_shard_yml(data, path_to_dir)
     Log.info { "Handling shard.yml" }
-    if data["shard_yml"]
-        shards_yml = File.open(shard_yml_file) do |file|
-            YAML.parse(file)
-        end
-        Log.info { shards_yml }
-        shards = shards_yml.as_h
-    else
+
+    shard_yml_file = Path.new(path_to_dir, "shard.yml").to_s
+    data["shard_yml"] = File.exists?(shard_yml_file)
+    if ! data["shard_yml"]
         ["name", "description", "version", "crystal", "license"].each {|field|
             data[field] = ""
         }
         return
-        #shards = {} of String => String|Int32|Bool
     end
-    handled_fields = Set{"name", "description", "version", "dependencies", "development_dependencies", "authors", "crystal", "license"}
-    handled_fields.concat(Set{"targets", "scripts"}) # TODO: handle these fields
 
-    shards.each_key {|field|
-        if ! handled_fields.includes?(field)
-            Log.error { "Unhandled field #{field}" }
-        end
-    }
+    shard = Shards::Spec.from_file(path_to_dir) # validate = true
 
-    ["name", "description", "version", "crystal", "license"].each {|field|
-        data[field] = shards.has_key?(field) ? shards[field].to_s : ""
-    }
-    # crystal ">=0.36.1, < 2.0.0"
+    shards_yml = File.open(shard_yml_file) do |file|
+        YAML.parse(file)
+    end
+    Log.info { shards_yml }
+    shards = shards_yml.as_h
 
-    ["targets", "scripts"].each {|field|
-        if shards.has_key?(field)
-            Log.info { %{field: #{field} values #{shards[field]}} }
-        end
-    }
+    # handled_fields = Set{"name", "description", "version", "dependencies", "development_dependencies", "authors", "crystal", "license"}
+    # handled_fields.concat(Set{"targets", "scripts"}) # TODO: handle these fields
 
-    # TODO: what shall we do with the "name" part?
-    # name:
-    #   github: user_name/repo_name
-    #   version:
+    # shards.each_key {|field|
+    #     if ! handled_fields.includes?(field)
+    #         Log.error { "Unhandled field #{field}" }
+    #     end
+    # }
+
+    data["name"] = shard.name || ""
+    data["description"] = shard.description || ""
+    data["version"] = shard.version.to_s || "" # (Shards::Version | String)
+    data["crystal"] = shard.crystal || "" # ">=0.36.1, < 2.0.0"
+    data["license"] = shard.license || ""
+
+    # ["targets", "scripts"].each {|field|
+    #     if shards.has_key?(field)
+    #         Log.info { %{field: #{field} values #{shards[field]}} }
+    #     end
+    # }
 
     dependencies = [] of Array(String)
-    ["dependencies", "development_dependencies"].each {|field|
-        if shards.has_key?(field)
-            #Log.info { %{field: #{field} values #{shards[field]}} }
-            shards[field].as_h.each_value {|dep|
-                dependency = dep.as_h
-                #Log.info { %{field: #{field} #{name} - #{dependency} } }
-                if dependency.has_key?("github")
-                    #Log.info { %{field: #{field} #{name} - #{dependency["github"]} } }
-                    user_name, repo_name = dependency["github"].as_s.split("/")
-                    dependencies.push([field, "github.com", user_name, repo_name])
-                    # TODO are there other keys? e.g. version?
-                else
-                    Log.error { %{github field is missing from dependency #{dependency}} }
-                end
-            }
-        end
+    shard.dependencies.each {|dep|
+        #puts "  #{dep.name}"
+        host, user_name, repo_name = parse_url(dep.resolver.source) #  https://github.com/crystal-ameba/ameba.git
+        dependencies.push(["dependencies", host, user_name, repo_name])
+        #puts "  #{dep.requirement}"
+    }
+    shard.development_dependencies.each {|dep|
+        #puts "  #{dep.name}"
+        host, user_name, repo_name = parse_url(dep.resolver.source) #  https://github.com/crystal-ameba/ameba.git
+        dependencies.push(["development_dependencies", host, user_name, repo_name])
+        #puts "  #{dep.requirement}"
     }
     data["dependencies"] = dependencies
 

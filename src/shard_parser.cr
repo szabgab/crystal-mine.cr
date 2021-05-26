@@ -1,4 +1,5 @@
 require "../lib/shards/src/spec"
+require "uri"
 
 # Stand-alone script to parse a shard.yml file and display the information it contains
 
@@ -31,6 +32,15 @@ res.dependencies.each {|dep|
     #p! dep
     puts "  #{dep.name}"
     puts "  #{dep.resolver.source}"
+    source_url = dep.resolver.source.gsub(/\.git$/, "")
+
+    uri = URI.parse source_url
+    host = uri.host.to_s
+    user_name, repo_name = uri.path[1..].split("/")
+    puts "  host: #{host}"
+    puts "  user_name: #{user_name}"
+    puts "  repo_name: #{repo_name}"
+
     # puts "  #{dep.resolver.origin_url}"
     # puts "  #{dep.resolver.local_path}"
     # puts "  #{dep.resolver.updated_cache}"
@@ -57,4 +67,3 @@ res.authors.each {|aut|
     puts "  #{aut.email}"
     puts ""
 }
-
