@@ -110,8 +110,24 @@ end
 
 def store_in_db(data)
     rows_affected, last_insert_id = store_shard_in_db(data)
+    #store_dependencies_in_db(last_insert_id, data)
+
     return rows_affected, last_insert_id
 end
+
+# def store_dependencies_in_db(shard_id, data)
+#     db_file = get_db_file
+#     # DB.open "sqlite3://#{db_file}" do |db|
+#     #     db.exec "DELETE dependencies WHERE shards_id=?", shard_id
+#     #     dependencies = data["dependencies"]
+#     #     dependencies.each {|dependency|
+#     #         db.exec "INSERT INTO dependencies
+#     #             (shards_id, dependency_type, host, user_name, repo_name)
+#     #             VALUES (?, ?, ?, ?, ?)",
+#     #             shard_id, dependency[0..3]
+#     #     }
+#     # end
+# end
 
 def store_shard_in_db(data)
     now = Time.utc
