@@ -60,7 +60,7 @@ rescue err
 end
 
 
-def parse_url(url)
+def parse_url(url) : Tuple(String, String, String)
     uri = URI.parse url.gsub(/\.git$/, "")
     host = uri.host.to_s
     user_name, repo_name = uri.path[1..].split("/")
@@ -176,13 +176,14 @@ def handle_shard_yml(data, path_to_dir)
     }
     data["dependencies"] = dependencies
 
-    if shards.has_key?("authors")
-        Log.info { %{Authors #{shards["authors"]}} }
-        shards["authors"].as_a.each {|author|
-            # "Foo Bar <foo@bar.com>"
-            Log.info { "author: #{author}" }
-        }
-    end
+    #data["authors"] = [] of Array(Hash(String, String))
+    shard.authors.each {|author|
+        Log.info { "author: #{author.name}  #{author.email}" }
+        # data["authors"].push({
+        #     "name" => author.name,
+        #     "email" => author.email,
+        # })
+    }
 end
 
 
@@ -200,7 +201,7 @@ def capture(cmd, params)
     return output, error, res.exit_status
 end
 
-def read_config
+def read_config : Tuple(String, String)
     config_file = "config.txt"
     line = File.read_lines(config_file).first
     username, token = line.split(":")
