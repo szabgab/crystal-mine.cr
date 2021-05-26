@@ -28,6 +28,10 @@ shards:
     git: https://github.com/jeromegn/kilt.git
     version: 0.4.1
 
+  molinillo:
+    git: https://github.com/crystal-lang/crystal-molinillo.git
+    version: 0.2.0
+
   octokit:
     git: https://github.com/watzon/octokit.cr.git
     version: 0.1.0+git.commit.11b46ace655b56e10fe9c37ecf779eaee6aaf7f5
@@ -39,6 +43,10 @@ shards:
   sentry:
     git: https://github.com/samueleaton/sentry.git
     version: 0.4.0
+
+  shards:
+    git: https://github.com/crystal-lang/shards.git
+    version: 0.14.1
 
   spec-kemal:
     git: https://github.com/kemalcr/spec-kemal.git

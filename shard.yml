@@ -16,6 +16,8 @@ dependencies:
     github: kemalcr/kemal
   spec-kemal:
     github: kemalcr/spec-kemal
+  shards:
+    github: crystal-lang/shards
 
 development_dependencies:
   ameba:
