@@ -45,8 +45,19 @@ def create_db
         db.exec "CREATE TABLE author_of_shard (
             shards_id INTEGER,
             authors_id INTEGER,
+            FOREIGN KEY(shards_id) REFERENCES shards(id),
+            FOREIGN KEY(authors_id) REFERENCES authors(id),
             UNIQUE (shards_id, authors_id)
-        )"
+            )"
+        db.exec "CREATE TABLE dependencies (
+            shards_id INTEGER,
+            dependency_type TEXT,
+            host TEXT,
+            user_name TEXT,
+            repo_name TEXT,
+            FOREIGN KEY(shards_id) REFERENCES shards(id)
+            )"
+
     end
 end
 
@@ -98,6 +109,11 @@ def get_all()
 end
 
 def store_in_db(data)
+    rows_affected, last_insert_id = store_shard_in_db(data)
+    return rows_affected, last_insert_id
+end
+
+def store_shard_in_db(data)
     now = Time.utc
 
     project = get_project(data["host"], data["user_name"], data["repo_name"])

@@ -93,7 +93,7 @@ def process(url, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
-    data = Hash(String, String | Bool).new
+    data = Hash(String, String | Bool | Array(Array(String))).new
     data["host"]           = host
     data["user_name"]      = user_name
     data["repo_name"]      = repo_name
@@ -156,11 +156,25 @@ def handle_shard_yml(data, path)
     #   github: user_name/repo_name
     #   version:
 
+    dependencies = [] of Array(String)
     ["dependencies", "development_dependencies"].each {|field|
         if shards.has_key?(field)
-            Log.info { %{field: #{field} values #{shards[field]}} }
+            #Log.info { %{field: #{field} values #{shards[field]}} }
+            shards[field].as_h.each_value {|dep|
+                dependency = dep.as_h
+                #Log.info { %{field: #{field} #{name} - #{dependency} } }
+                if dependency.has_key?("github")
+                    #Log.info { %{field: #{field} #{name} - #{dependency["github"]} } }
+                    user_name, repo_name = dependency["github"].as_s.split("/")
+                    dependencies.push([field, "github.com", user_name, repo_name])
+                    # TODO are there other keys? e.g. version?
+                else
+                    Log.error { %{github field is missing from dependency #{dependency}} }
+                end
+            }
         end
     }
+    data["dependencies"] = dependencies
 
     if shards.has_key?("authors")
         Log.info { %{Authors #{shards["authors"]}} }
