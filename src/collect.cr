@@ -134,32 +134,12 @@ def handle_shard_yml(data, path_to_dir)
 
     shard = Shards::Spec.from_file(path_to_dir) # validate = true
 
-    shards_yml = File.open(shard_yml_file) do |file|
-        YAML.parse(file)
-    end
-    Log.info { shards_yml }
-    shards = shards_yml.as_h
-
-    # handled_fields = Set{"name", "description", "version", "dependencies", "development_dependencies", "authors", "crystal", "license"}
-    # handled_fields.concat(Set{"targets", "scripts"}) # TODO: handle these fields
-
-    # shards.each_key {|field|
-    #     if ! handled_fields.includes?(field)
-    #         Log.error { "Unhandled field #{field}" }
-    #     end
-    # }
-
     data["name"] = shard.name || ""
     data["description"] = shard.description || ""
     data["version"] = shard.version.to_s || "" # (Shards::Version | String)
     data["crystal"] = shard.crystal || "" # ">=0.36.1, < 2.0.0"
     data["license"] = shard.license || ""
-
-    # ["targets", "scripts"].each {|field|
-    #     if shards.has_key?(field)
-    #         Log.info { %{field: #{field} values #{shards[field]}} }
-    #     end
-    # }
+    # TODO: targets, scripts
 
     dependencies = [] of Array(String)
     shard.dependencies.each {|dep|
