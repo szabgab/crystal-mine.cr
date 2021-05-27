@@ -35,5 +35,3 @@ jobs:
     - name: Run specs for web app
       run: |
         crystal spec
-
-

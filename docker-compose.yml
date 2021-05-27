@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "127.0.0.1:6002:3000"
+    restart: unless-stopped
+    volumes:
+      - sqlite-data:/data
+
+  cron:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    entrypoint: cron -f -L3
+    volumes:
+      - sqlite-data:/data
+
+volumes:
+  sqlite-data:

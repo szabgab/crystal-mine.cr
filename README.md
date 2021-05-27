@@ -93,3 +93,14 @@ npm run css-build
 1. Dump data using `echo .dump | sqlite3 data.db > spec/data.sql`
 1. Add columns to `FIELDS` and to `parse_row`
 1. Add columns to the display template
+
+
+## Docker compose for development
+
+1. Install Docker
+1. Install Docker compose `pip install docker-compose`
+1. Build: `docker-compose build`
+1. Start `docker-compose up`
+1. Visit http://localhost:6002
+
+
