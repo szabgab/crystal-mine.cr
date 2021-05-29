@@ -8,8 +8,8 @@ require "./mine/db"
 require "./mine/github"
 
 def mine
-    verbose, limit, keep, url, repos_file = get_options
-    if verbose
+    options = get_options
+    if options.verbose
         Log.setup(:trace)
     else
         Log.setup(:warn)
@@ -21,13 +21,13 @@ def mine
     FileUtils.mkdir(root)
     counter = 0
     Log.info { "Root directory #{root}" }
-    if ! url.nil?
-        process_wrapper url, root
-    elsif ! repos_file.nil?
-        repos = File.read_lines(repos_file)
+    if options.url != ""
+        process_wrapper options.url, root
+    elsif options.repos_file != ""
+        repos = File.read_lines(options.repos_file)
         repos.each {|repo|
             counter += 1
-            if 0 < limit && limit < counter
+            if 0 < options.limit && options.limit < counter
                 break
             end
             process_wrapper repo, root
@@ -37,7 +37,7 @@ def mine
     end
 
 
-    if ! keep
+    if ! options.keep
         FileUtils.rm_rf(root)
     end
 
@@ -189,13 +189,40 @@ def read_config : Tuple(String, String)
     return username, token
 end
 
-def get_options
-    verbose = false
-    limit = 0
-    keep = false
-    url = nil
-    repos_file = nil
+class Options
+    property verbose
+    getter verbose : Bool
 
+    property url
+    getter url : String
+
+    property repos_file
+    getter repos_file : String
+
+    property limit
+    getter limit : Int32
+
+    property keep
+    getter keep : Bool
+
+    def initialize(
+            verbose : Bool = false ,
+            github_token : String = "",
+            limit : Int32 = 0,
+            keep : Bool = false,
+            url : String  = "",
+            repos_file : String = "",
+        )
+        @verbose = verbose
+        @github_token = github_token
+        @limit = limit
+        @keep = keep
+        @url = url
+        @repos_file = repos_file
+    end
+end
+
+def get_options
     # --recent  fetch the most recently changed repositories and work on them
     # Should it get a date so we only check repositories changed since that date?
     # might need paging if there are more than 100 recently updated repositories
@@ -210,13 +237,15 @@ def get_options
     # store the start date of our current update process and only update records that have not been updated since
     # that time to avoid updating the same record because multiple occurance (especially about people.)
 
+    options = Options.new
+
     OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
-        parser.on("-v", "--verbose", "Verbose mode") { verbose = true }
-        parser.on("--keep", "Keep temporary directory") { keep = true }
-        parser.on("--limit=LIMIT", "How many URLs to process?") { |value| limit = value.to_i }
-        parser.on("--url=URL", "Process this GitHub URL") { |value| url = value }
-        parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| repos_file = value }
+        parser.on("-v", "--verbose", "Verbose mode") { options.verbose = true }
+        parser.on("--keep", "Keep temporary directory") { options.keep = true }
+        parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
+        parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
+        parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| options.repos_file = value }
         parser.on("-h", "--help", "Show this help") do
             puts parser
             exit
@@ -232,5 +261,5 @@ def get_options
             exit(1)
         end
     end
-    return verbose, limit, keep, url, repos_file
+    return options
 end
