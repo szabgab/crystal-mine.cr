@@ -15,7 +15,7 @@ describe "Collect" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(crystal, ["src/mine.cr" ])
             stderr.should eq ""
-            stdout.should contain("ERROR - Neither --url nor --repos was provided")
+            stdout.should contain("ERROR - Neither --url nor --repos not --recent was provided")
             exit_code.should eq 0 # TODO: probably should be something else
             res = get_all()
             res.empty?.should be_true

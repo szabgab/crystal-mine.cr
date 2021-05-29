@@ -138,7 +138,7 @@ class GitHub
         client = HTTP::Client.new("api.github.com", 443, true)
         client.basic_auth @github_user, @github_token
         response = client.get(url)
-        #puts response.body
+        # puts response.body
         return response
     end
 

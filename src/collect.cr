@@ -16,7 +16,6 @@ def mine
     end
     create_db
 
-    #get_repos
     root = File.tempname
     FileUtils.mkdir(root)
     counter = 0
@@ -32,8 +31,18 @@ def mine
             end
             process_wrapper repo, root
         }
+    elsif options.recent
+        repos = get_repos
+        repos["items"].each {|repo|
+            counter += 1
+            if 0 < options.limit && options.limit < counter
+                break
+            end
+            #p! repo
+            process_wrapper repo["html_url"], root
+        }
     else
-        Log.error { "Neither --url nor --repos was provided}" }
+        Log.error { "Neither --url nor --repos not --recent was provided}" }
     end
 
 
@@ -45,12 +54,9 @@ end
 
 
 def get_repos
-    #username, token = read_config
-    #github = Octokit.client(username, token)
-    #puts github
-    #pp github.user
-    #pp github.search_repositories "crystal", per_page: 3 #, sort: "updated"
-    #pp github.search_users "szabgab"
+    username, token = read_config
+    gh = GitHub.new(username, token)
+    gh.get_repos
 end
 
 def process_wrapper(url, root)
@@ -205,6 +211,9 @@ class Options
     property keep
     getter keep : Bool
 
+    property recent
+    getter recent : Bool
+
     def initialize(
             verbose : Bool = false ,
             github_token : String = "",
@@ -212,8 +221,10 @@ class Options
             keep : Bool = false,
             url : String  = "",
             repos_file : String = "",
+            recent : Bool = false,
         )
         @verbose = verbose
+        @recent = recent
         @github_token = github_token
         @limit = limit
         @keep = keep
@@ -242,6 +253,7 @@ def get_options
     OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
         parser.on("-v", "--verbose", "Verbose mode") { options.verbose = true }
+        parser.on("--recent", "Recently updated shards") { options.recent = true }
         parser.on("--keep", "Keep temporary directory") { options.keep = true }
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
         parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
