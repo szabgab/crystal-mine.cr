@@ -36,6 +36,16 @@ def create_db
             license TEXT,
             UNIQUE (host, user_name, repo_name)
             )"
+
+
+        # There is going to be a lot of overlap among owners, authros, and contributors, but for each group we'll
+        # have very different details so we have three separate tables to hold them.
+
+        # owners are the the owners of the repositories (eg. in case of  github.com/foobar/project it is foobar)
+        # each shard has a single owner.
+
+        # "authors" are the people listed in the shard.uml file as authors
+        # each shard can have multiple authors
         db.exec "CREATE TABLE authors (
             id INTEGER PRIMARY KEY,
             name TEXT,
@@ -58,6 +68,14 @@ def create_db
             FOREIGN KEY(shards_id) REFERENCES shards(id)
             )"
 
+        # "contributors" are people who can be extracted from the commit informations
+        # each shard can have multiple contributors
+        db.exec "CREATE TABLE contributors (
+            id INTEGER PRIMARY KEY,
+            name TEXT,
+            email TEXT,
+            UNIQUE (email)
+            )"
     end
 end
 

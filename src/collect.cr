@@ -5,6 +5,7 @@ require "option_parser"
 require "yaml"
 require "../lib/shards/src/spec"
 require "./mine/db"
+require "./mine/github"
 
 def mine
     verbose, limit, keep, url, repos_file = get_options
@@ -194,6 +195,20 @@ def get_options
     keep = false
     url = nil
     repos_file = nil
+
+    # --recent  fetch the most recently changed repositories and work on them
+    # Should it get a date so we only check repositories changed since that date?
+    # might need paging if there are more than 100 recently updated repositories
+    # --all fetch all the repositories (use paging to go beyond the 100 limit)
+    # and update all of them. This can be used when we checnge the schema and would like
+    # to update all the data
+    # Have some mechanism to work slowly so we won't go beyond the accepted request rate of GitHub.
+
+    # -- people ? A separate flag to upadte all the authors or should this be part of our regular update
+
+
+    # store the start date of our current update process and only update records that have not been updated since
+    # that time to avoid updating the same record because multiple occurance (especially about people.)
 
     OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
