@@ -101,6 +101,7 @@ npm run css-build
 1. Install Docker compose `pip install docker-compose`
 1. Build: `docker-compose build`
 1. Start `docker-compose up`
+1. Collect some data: `docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/repos.txt`
 1. Visit http://localhost:6002
 
 

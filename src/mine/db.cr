@@ -1,7 +1,6 @@
 require "log"
 require "sqlite3"
 
-
 FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions, crystal, license"
 
 def get_db_file : String
@@ -9,6 +8,7 @@ def get_db_file : String
     if ENV.has_key?("MINE_DB")
         db_file =  ENV["MINE_DB"]
     end
+    Log.info { "DB file: #{db_file}" }
     return db_file
 end
 

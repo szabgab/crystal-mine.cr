@@ -31,7 +31,6 @@ get "/github.com/:user_name/:repo_name" do |env|
     halt env, status_code: 404, response: "We don't know about this project"
   end
   dependencies = get_dependencies(shard["id"])
-  puts dependencies
 
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end
