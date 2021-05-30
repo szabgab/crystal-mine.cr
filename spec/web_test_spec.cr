@@ -1,5 +1,19 @@
 require "./spec_helper"
 
+describe "Web Application without a database" do
+  it "renders /" do
+    no_db_fixture(cleanup: true) do
+      get "/"
+      response.status_code.should eq 500
+      response.headers["Content-Type"].should eq "text/html"
+      #response.body.should contain("<title>Welcome to the Crystal Mine</title>")
+      #response.body.should contain(%{<h1 class="title">Welcome to the Crystal Mine</h1>})
+    end
+  end
+end
+
+
+
 describe "Web Application with empty database" do
   it "renders /" do
     empty_db_fixture(cleanup: true) do

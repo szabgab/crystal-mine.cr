@@ -11,9 +11,4 @@ no_db_fixture(cleanup: true) do
     exit_code.should eq 0
 
     `echo .dump | sqlite3 #{ENV["MINE_DB"]} > spec/data.sql`
-    # res = get_all()
-    # clean(res)
-    # expected = full_database
-    # clean(expected)
-    # res.should eq expected
 end
