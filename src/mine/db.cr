@@ -79,6 +79,54 @@ def create_db
     end
 end
 
+class Dependency
+    property shards_id
+    getter shards_id : Int32
+
+    property dependency_type
+    getter dependency_type : String
+
+    property host
+    getter host : String
+
+    property user_name
+    getter user_name : String
+
+    property repo_name
+    getter repo_name : String
+    def initialize(shards_id, dependency_type, host, user_name, repo_name)
+        @shards_id = shards_id
+        @dependency_type = dependency_type
+        @host = host
+        @user_name = user_name
+        @repo_name = repo_name
+    end
+end
+
+def get_dependencies(shard_id)
+    dependencies = [] of Dependency
+
+    db_file = get_db_file
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "
+                SELECT shards_id, dependency_type, host, user_name, repo_name
+                FROM dependencies
+                WHERE shards_id=?",
+            shard_id do |rs|
+            rs.each do
+                dependencies.push Dependency.new(
+                    shards_id: rs.read(Int32),
+                    dependency_type: rs.read(String),
+                    host: rs.read(String),
+                    user_name: rs.read(String),
+                    repo_name: rs.read(String),
+                )
+            end
+        end
+    end
+    return dependencies
+end
+
 def get_project(host, user_name, repo_name)
     db_file = get_db_file
     row = {} of String => String|Int32|Bool
