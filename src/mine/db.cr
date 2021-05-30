@@ -128,29 +128,28 @@ end
 
 def store_in_db(data)
     rows_affected, last_insert_id = store_shard_in_db(data)
-    #store_dependencies_in_db(last_insert_id, data)
+    store_dependencies_in_db(last_insert_id, data)
 
     return rows_affected, last_insert_id
 end
 
-# def store_dependencies_in_db(shard_id, data)
-#     db_file = get_db_file
-#     # DB.open "sqlite3://#{db_file}" do |db|
-#     #     db.exec "DELETE dependencies WHERE shards_id=?", shard_id
-#     #     dependencies = data["dependencies"]
-#     #     dependencies.each {|dependency|
-#     #         db.exec "INSERT INTO dependencies
-#     #             (shards_id, dependency_type, host, user_name, repo_name)
-#     #             VALUES (?, ?, ?, ?, ?)",
-#     #             shard_id, dependency[0..3]
-#     #     }
-#     # end
-# end
+def store_dependencies_in_db(shard_id, data)
+    db_file = get_db_file
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.exec "DELETE FROM dependencies WHERE shards_id=?", shard_id
+        data.dependencies.each {|dependency|
+            db.exec "INSERT INTO dependencies
+                (shards_id, dependency_type, host, user_name, repo_name)
+                VALUES (?, ?, ?, ?, ?)",
+                shard_id, dependency[0], dependency[1], dependency[2], dependency[3]
+        }
+    end
+end
 
 def store_shard_in_db(data)
     now = Time.utc
 
-    project = get_project(data["host"], data["user_name"], data["repo_name"])
+    project = get_project(data.host, data.user_name, data.repo_name)
 
     db_file = get_db_file
     DB.open "sqlite3://#{db_file}" do |db|
@@ -172,18 +171,18 @@ def store_shard_in_db(data)
                 license=?
                 WHERE id=?",
 
-                data["host"],
-                data["user_name"],
-                data["repo_name"],
+                data.host,
+                data.user_name,
+                data.repo_name,
                 now,
-                data["name"],
-                data["description"],
-                data["version"],
-                data["travis_ci"],
-                data["github_actions"],
-                data["shard_yml"],
-                data["crystal"],
-                data["license"],
+                data.name,
+                data.description,
+                data.version,
+                data.travis_ci,
+                data.github_actions,
+                data.shard_yml,
+                data.crystal,
+                data.license,
                 rowid
 
             Log.info { "res #{res}" }
@@ -193,18 +192,18 @@ def store_shard_in_db(data)
             res = db.exec "INSERT INTO shards
                 (host, user_name, repo_name, record_last_updated, name, description, version, travis_ci, github_actions, shard_yml, crystal, license)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                data["host"],
-                data["user_name"],
-                data["repo_name"],
+                data.host,
+                data.user_name,
+                data.repo_name,
                 now,
-                data["name"],
-                data["description"],
-                data["version"],
-                data["travis_ci"],
-                data["github_actions"],
-                data["shard_yml"],
-                data["crystal"],
-                data["license"]
+                data.name,
+                data.description,
+                data.version,
+                data.travis_ci,
+                data.github_actions,
+                data.shard_yml,
+                data.crystal,
+                data.license
 
             Log.info { "res #{res}" }
             return res.rows_affected, res.last_insert_id

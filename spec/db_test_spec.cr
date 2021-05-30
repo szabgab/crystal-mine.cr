@@ -15,8 +15,10 @@ describe "Database" do
 
         db_fixture(cleanup: true) do
             res = get_all()
-            # puts res
-            res.should eq full_database
+            clean(res)
+            expected = full_database
+            clean(expected)
+            res.should eq expected
         end
     end
 
@@ -28,8 +30,10 @@ describe "Database" do
 
 
         proj = get_project("github.com", "szabgab", "crystal-mine.cr")
-        #exp = full_database[0]
-        proj.should eq full_database[0]
+        clean([proj])
+        expected = full_database
+        clean(expected)
+        proj.should eq expected[0]
       end
     end
 end

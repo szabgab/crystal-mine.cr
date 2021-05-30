@@ -7,6 +7,60 @@ require "../lib/shards/src/spec"
 require "./mine/db"
 require "./mine/github"
 
+
+class Project
+    property host
+    getter host : String
+
+    property user_name
+    getter user_name : String
+
+    property repo_name
+    getter repo_name : String
+
+    property travis_ci
+    getter travis_ci : Bool
+
+    property github_actions
+    getter github_actions : Bool
+
+    property shard_yml
+    getter shard_yml : Bool
+
+    property name
+    getter name : String
+
+    property description
+    getter description : String
+
+    property version
+    getter version : String
+
+    property crystal
+    getter crystal : String
+
+    property license
+    getter license : String
+
+    property dependencies
+    getter dependencies = [] of Array(String)
+
+    def initialize
+        @host = ""
+        @user_name = ""
+        @repo_name = ""
+        @travis_ci = false
+        @github_actions = false
+        @shard_yml = false
+        @name = ""
+        @description = ""
+        @version = ""
+        @crystal = ""
+        @license = ""
+        @dependencies = [] of Array(String)
+    end
+end
+
 def mine
     options = get_options
     if options.verbose
@@ -107,18 +161,15 @@ def process(url, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
-    data = Hash(String, String | Bool | Array(Array(String))).new
-    data["host"]           = host
-    data["user_name"]      = user_name
-    data["repo_name"]      = repo_name
-    data["travis_ci"]      = false
-    data["github_actions"] = false
-    data["shard_yml"]      = false
+    data = Project.new
+    data.host           = host
+    data.user_name      = user_name
+    data.repo_name      = repo_name
 
     Log.info { Path.new(path, ".travis.yml").to_s }
-    data["travis_ci"] = File.exists?(Path.new(path, ".travis.yml").to_s)
+    data.travis_ci = File.exists?(Path.new(path, ".travis.yml").to_s)
     # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
-    data["github_actions"] = File.exists?(Path.new(path, ".github", "workflows").to_s)
+    data.github_actions = File.exists?(Path.new(path, ".github", "workflows").to_s)
 
     handle_shard_yml(data, path)
 
@@ -131,39 +182,31 @@ def handle_shard_yml(data, path_to_dir)
     Log.info { "Handling shard.yml" }
 
     shard_yml_file = Path.new(path_to_dir, "shard.yml").to_s
-    data["shard_yml"] = File.exists?(shard_yml_file)
-    if ! data["shard_yml"]
-        ["name", "description", "version", "crystal", "license"].each {|field|
-            data[field] = ""
-        }
-        return
-    end
+    data.shard_yml = File.exists?(shard_yml_file)
 
     shard = Shards::Spec.from_file(path_to_dir) # validate = true
 
-    data["name"] = shard.name || ""
-    data["description"] = shard.description || ""
-    data["version"] = shard.version.to_s || "" # (Shards::Version | String)
-    data["crystal"] = shard.crystal || "" # ">=0.36.1, < 2.0.0"
-    data["license"] = shard.license || ""
+    data.name = shard.name || ""
+    data.description = shard.description || ""
+    data.version = shard.version.to_s || "" # (Shards::Version | String)
+    data.crystal = shard.crystal || "" # ">=0.36.1, < 2.0.0"
+    data.license = shard.license || ""
     # TODO: targets, scripts
 
-    dependencies = [] of Array(String)
     shard.dependencies.each {|dep|
         #puts "  #{dep.name}"
         host, user_name, repo_name = parse_url(dep.resolver.source) #  https://github.com/crystal-ameba/ameba.git
-        dependencies.push(["dependencies", host, user_name, repo_name])
+        data.dependencies.push(["dependencies", host, user_name, repo_name])
         #puts "  #{dep.requirement}"
     }
     shard.development_dependencies.each {|dep|
         #puts "  #{dep.name}"
         host, user_name, repo_name = parse_url(dep.resolver.source) #  https://github.com/crystal-ameba/ameba.git
-        dependencies.push(["development_dependencies", host, user_name, repo_name])
+        data.dependencies.push(["development_dependencies", host, user_name, repo_name])
         #puts "  #{dep.requirement}"
     }
-    data["dependencies"] = dependencies
 
-    #data["authors"] = [] of Array(Hash(String, String))
+    #data.authors = [] of Array(Hash(String, String))
     shard.authors.each {|author|
         Log.info { "author: #{author.name}  #{author.email}" }
         # data["authors"].push({
