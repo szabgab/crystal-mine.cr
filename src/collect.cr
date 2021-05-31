@@ -99,6 +99,14 @@ def mine
         Log.error { "Neither --url nor --repos not --recent was provided}" }
     end
 
+    if options.dependencies
+        # get all the shards that are listed as dependencies
+        # go over them and if they are not in the database try to add them to the database
+        # do this again and again till we processed all the missing dependencies
+        # keep a list of the ones that are not available to avoid infinite try. Later add this information to the database
+        #dependencies = get_all_dependencies
+    end
+
 
     if ! options.keep
         FileUtils.rm_rf(root)
