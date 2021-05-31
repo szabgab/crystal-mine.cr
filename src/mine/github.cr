@@ -79,11 +79,11 @@ class GitHub
         @github_token = github_token
     end
 
-    def get_repos()
+    def get_repos(per_page = 3, page = 1)
         query = "language:crystal"
-        per_page = 3 # max is 100
+        # per_page max is 100
         sort = "updated" # stars, forks, help-wanted-issues, updated
-        page=1
+        #page=1
         order = "desc"
         response = fetch("/search/repositories?q=#{query}&per_page=#{per_page}&sort=#{sort}&page=#{page}&orde=#{order}")
         repos = GitHubRepos.from_json(response.body)
