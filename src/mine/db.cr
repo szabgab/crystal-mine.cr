@@ -101,6 +101,16 @@ class Dependency
         @user_name = user_name
         @repo_name = repo_name
     end
+
+    def Dependency.from_db(rs)
+        Dependency.new(
+            shards_id: rs.read(Int32),
+            dependency_type: rs.read(String),
+            host: rs.read(String),
+            user_name: rs.read(String),
+            repo_name: rs.read(String),
+        )
+    end
 end
 
 def get_dependencies(shard_id)
@@ -112,15 +122,9 @@ def get_dependencies(shard_id)
                 SELECT shards_id, dependency_type, host, user_name, repo_name
                 FROM dependencies
                 WHERE shards_id=?",
-            shard_id do |rs|
+                shard_id do |rs|
             rs.each do
-                dependencies.push Dependency.new(
-                    shards_id: rs.read(Int32),
-                    dependency_type: rs.read(String),
-                    host: rs.read(String),
-                    user_name: rs.read(String),
-                    repo_name: rs.read(String),
-                )
+                dependencies.push Dependency.from_db(rs)
             end
         end
     end
