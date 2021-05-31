@@ -1,3 +1,15 @@
 <% title = "Statistics" %>
 
-TBD
+<style>
+#stats {
+    margin-top: 20px;
+}
+#stats td {
+    padding-right: 20px;
+}
+</style>
+
+<table id="stats">
+<tr><td>Total number of shards:</td><td><%= stats["all"] %></td></tr>
+<tr><td>No description:</td><td><%= stats["no_description"] %></td></tr>
+</table>

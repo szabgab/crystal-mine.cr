@@ -133,6 +133,46 @@ def get_all_dependencies()
     return dependencies
 end
 
+def count(db, sql)
+    result = 0
+    db.query sql do |rs|
+        rs.each do
+            result = rs.read(Int32)
+        end
+    end
+    return result
+end
+
+def get_stats()
+    stats = {} of String => Int32
+
+    db_file = get_db_file
+    DB.open "sqlite3://#{db_file}" do |db|
+        stats["all"] = count(db, "SELECT COUNT(*) FROM shards")
+        stats["no_description"] = count(db, %{SELECT COUNT(*) FROM shards WHERE description = ""})
+    end
+    return stats
+end
+
+def get_reverse_dependencies(shard_id)
+    dependencies = [] of Dependency
+
+    db_file = get_db_file
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "
+                SELECT shards_id, dependency_type, host, user_name, repo_name
+                FROM dependencies
+                WHERE shards_id=?",
+                shard_id do |rs|
+            rs.each do
+                dependencies.push Dependency.from_db(rs)
+            end
+        end
+    end
+    return dependencies
+
+end
+
 def get_dependencies(shard_id)
     dependencies = [] of Dependency
 

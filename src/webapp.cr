@@ -19,6 +19,7 @@ get "/about" do
 end
 
 get "/stats" do
+  stats = get_stats
   render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
 end
 
