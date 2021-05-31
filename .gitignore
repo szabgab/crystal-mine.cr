@@ -3,3 +3,4 @@ lib/
 bin/
 data.db
 node_modules/
+docker-compose.override.yml

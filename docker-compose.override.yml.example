@@ -1,0 +1,10 @@
+version: "3"
+services:
+  web:
+    volumes:
+      - .:/opt
+    entrypoint: ./bin/sentry-docker -b "crystal build src/webapp.cr -o bin/webapp" -r bin/webapp
+  cron:
+    volumes:
+      - .:/opt
+

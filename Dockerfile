@@ -13,6 +13,7 @@ RUN apt-get update && \
 WORKDIR /opt
 COPY shard.yml .
 RUN shards install --ignore-crystal-version
+RUN crystal build --release lib/sentry/src/sentry_cli.cr -o ./bin/sentry-docker
 
 COPY . .
 RUN crontab /opt/crontab.txt

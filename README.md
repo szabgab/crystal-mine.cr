@@ -104,4 +104,4 @@ npm run css-build
 1. Collect some data: `docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/repos.txt`
 1. Visit http://localhost:6002
 
-
+For development copy docker-compose.override.yml.example to docker-compose.override.yml and change it according to your taste.
