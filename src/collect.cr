@@ -99,17 +99,23 @@ def process_dependencies(options, root)
     # go over them and if they are not in the database try to add them to the database
     # do this again and again till we processed all the missing dependencies
     # keep a list of the ones that are not available to avoid infinite try. Later add this information to the database
-    dependencies = get_all_dependencies
     processed = Set(String).new
-    dependencies.each {|dep|
-        shard = get_project(dep.host, dep.user_name, dep.repo_name)
-        #Log.info { shard }
-        if shard.empty? && ! processed.includes?(dep.url)
-            Log.info { dep.url }
-            processed.add(dep.url)
-            process_wrapper dep.url, root
-        end
-    }
+
+    loop do
+        newly_processed = false
+        dependencies = get_all_dependencies
+        dependencies.each {|dep|
+            shard = get_project(dep.host, dep.user_name, dep.repo_name)
+            #Log.info { shard }
+            if shard.empty? && ! processed.includes?(dep.url)
+                Log.info { dep.url }
+                processed.add(dep.url)
+                newly_processed = true
+                process_wrapper dep.url, root
+            end
+        }
+        break if ! newly_processed
+    end
 end
 
 def mine
