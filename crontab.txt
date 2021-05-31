@@ -1,1 +1,1 @@
-14 * * * * (cd /opt; crystal src/mine.cr --repos spec/many_repos.txt)
+30 * * * * (cd /opt; crystal src/mine.cr --recent 10)
