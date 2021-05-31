@@ -6,6 +6,7 @@ require "../lib/shards/src/spec"
 require "./mine/db"
 require "./mine/github"
 require "./mine/options"
+require "./mine/tools"
 
 class Project
     property host
@@ -60,13 +61,17 @@ class Project
     end
 end
 
-def mine
-    options = get_options
+def setup_logging(options)
     if options.verbose
         Log.setup(:trace)
     else
         Log.setup(:warn)
     end
+end
+
+def mine
+    options = get_options
+    setup_logging(options)
     create_db
 
     root = File.tempname
@@ -224,26 +229,4 @@ def handle_shard_yml(data, path_to_dir)
         #     "email" => author.email,
         # })
     }
-end
-
-
-def capture(cmd, params)
-    process = Process.new(cmd, params,
-        output: Process::Redirect::Pipe,
-        error: Process::Redirect::Pipe,
-        )
-
-    output = process.output.gets_to_end
-    error  = process.error.gets_to_end
-
-    res = process.wait
-
-    return output, error, res.exit_status
-end
-
-def read_config : Tuple(String, String)
-    config_file = "config.txt"
-    line = File.read_lines(config_file).first
-    username, token = line.split(":")
-    return username, token
 end
