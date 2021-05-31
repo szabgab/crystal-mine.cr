@@ -26,3 +26,13 @@
       <%- end -%>
    </ul>
 <% end %>
+
+<% if ! reverse_dependencies.empty? %>
+   <h3 class="title is-3">Reverse Dependencies</h3>
+
+   <ul>
+      <%- reverse_dependencies.each do |dep| -%>
+      <li><a href="/<%= dep.host %>/<%= dep.user_name %>/<%= dep.repo_name %>"><%= dep.user_name %>/<%= dep.repo_name %></a></li>
+      <%- end -%>
+   </ul>
+<% end %>

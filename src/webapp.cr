@@ -42,6 +42,7 @@ get "/github.com/:user_name/:repo_name" do |env|
   all_dependencies = get_dependencies(shard["id"])
   dependencies = all_dependencies.reject do |dep| dep.dependency_type != "dependencies" end
   development_dependencies = all_dependencies.reject do |dep| dep.dependency_type != "development_dependencies" end
+  reverse_dependencies = get_reverse_dependencies(host, user_name, repo_name)
 
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end

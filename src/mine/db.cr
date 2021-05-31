@@ -154,23 +154,25 @@ def get_stats()
     return stats
 end
 
-def get_reverse_dependencies(shard_id)
+def get_reverse_dependencies(host, user_name, repo_name)
     dependencies = [] of Dependency
 
     db_file = get_db_file
     DB.open "sqlite3://#{db_file}" do |db|
         db.query "
-                SELECT shards_id, dependency_type, host, user_name, repo_name
-                FROM dependencies
-                WHERE shards_id=?",
-                shard_id do |rs|
+                SELECT shards.id, dependencies.dependency_type, shards.host, shards.user_name, shards.repo_name
+                FROM shards, dependencies
+                WHERE dependencies.shards_id=shards.id
+                    AND dependencies.host = ?
+                    AND dependencies.user_name = ?
+                    AND dependencies.repo_name = ?",
+                host, user_name, repo_name do |rs|
             rs.each do
                 dependencies.push Dependency.from_db(rs)
             end
         end
     end
     return dependencies
-
 end
 
 def get_dependencies(shard_id)
