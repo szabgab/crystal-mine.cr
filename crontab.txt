@@ -1,1 +1,1 @@
-30 * * * * (cd /opt; crystal src/mine.cr --recent 10)
+30 * * * * (cd /opt; MINE_DB=/data/mine.db crystal src/mine.cr --recent 10 --verbose) >/opt/cron_output.log 2> /opt/cron_error.log
