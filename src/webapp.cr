@@ -39,7 +39,9 @@ get "/github.com/:user_name/:repo_name" do |env|
   if shard.empty?
     halt env, status_code: 404, response: "We don't know about this project"
   end
-  dependencies = get_dependencies(shard["id"])
+  all_dependencies = get_dependencies(shard["id"])
+  dependencies = all_dependencies.reject do |dep| dep.dependency_type != "dependencies" end
+  development_dependencies = all_dependencies.reject do |dep| dep.dependency_type != "development_dependencies" end
 
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end

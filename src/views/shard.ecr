@@ -6,11 +6,23 @@
 <div>Travis: <%= shard["travis_ci"] %></div>
 <div>Github Actions <%= shard["github_actions"] %></div>
 
-<h2>Dependencies</h2>
 
-<ul>
-   <%- dependencies.each do |dep| -%>
-   <li><a href="/<%= dep.host %>/<%= dep.user_name %>/<%= dep.repo_name %>"><%= dep.user_name %>/<%= dep.repo_name %></a> (<%= dep.dependency_type %>)</li>
-   <%- end -%>
-</ul>
+<% if ! dependencies.empty? %>
+   <h3 class="title is-3">Dependencies</h3>
 
+   <ul>
+      <%- dependencies.each do |dep| -%>
+      <li><a href="/<%= dep.host %>/<%= dep.user_name %>/<%= dep.repo_name %>"><%= dep.user_name %>/<%= dep.repo_name %></a></li>
+      <%- end -%>
+   </ul>
+<% end %>
+
+<% if ! development_dependencies.empty? %>
+   <h3 class="title is-3">Development Dependencies</h3>
+
+   <ul>
+      <%- development_dependencies.each do |dep| -%>
+      <li><a href="/<%= dep.host %>/<%= dep.user_name %>/<%= dep.repo_name %>"><%= dep.user_name %>/<%= dep.repo_name %></a></li>
+      <%- end -%>
+   </ul>
+<% end %>
