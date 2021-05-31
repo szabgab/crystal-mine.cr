@@ -42,6 +42,10 @@
 <section class="section">
   <div class="container">
     <h1 class="title"><%= title %></h1>
+    <form action="/search">
+    <input name="query" value="<%= query %>">
+    <input type="submit" value="Search">
+    </form>
   </div>
 
   <%= content %>

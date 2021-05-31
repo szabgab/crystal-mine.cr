@@ -184,6 +184,27 @@ def parse_row(rs)
     return row
 end
 
+def get_shards(query)
+    query = "%" + query + "%"
+    db_file = get_db_file
+    results = [] of Hash(String, String|Int32|Bool)
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "SELECT #{FIELDS}
+            FROM shards
+            WHERE
+                repo_name LIKE ?
+                OR name LIKE ?
+                OR description LIKE ?
+        ",  query, query, query do |rs|
+            rs.each do
+                row = parse_row(rs)
+                results.push(row)
+            end
+        end
+    end
+    results
+end
+
 def get_all()
     db_file = get_db_file
     results = [] of Hash(String, String|Int32|Bool)

@@ -6,6 +6,7 @@ require "./mine/db"
 #puts "https://www.gravatar.com/avatar/#{code}?s=100&d=blank"
 
 title = ""
+query = ""
 
 get "/" do
   title = "Welcome to the Crystal Mine"
@@ -20,6 +21,13 @@ end
 get "/stats" do
   render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
 end
+
+get "/search" do |env|
+  query = env.params.query["query"]
+  shards = get_shards(query)
+  render "src/views/main.ecr", "src/views/layouts/layout.ecr"
+end
+
 
 get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
