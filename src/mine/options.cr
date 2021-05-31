@@ -19,6 +19,9 @@ class Options
     property recent
     getter recent : Int32
 
+    property dependencies
+    getter dependencies : Bool
+
     def initialize(
             verbose : Bool = false ,
             github_token : String = "",
@@ -27,6 +30,7 @@ class Options
             url : String  = "",
             repos_file : String = "",
             recent : Int32 = 0,
+            dependencies : Bool = false ,
         )
         @verbose = verbose
         @recent = recent
@@ -35,6 +39,7 @@ class Options
         @keep = keep
         @url = url
         @repos_file = repos_file
+        @dependencies = dependencies
     end
 end
 
@@ -63,6 +68,7 @@ def get_options
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
         parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
         parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| options.repos_file = value }
+        parser.on("--dependencies", "Process dependencies") { options.dependencies = true }
         parser.on("-h", "--help", "Show this help") do
             puts parser
             exit

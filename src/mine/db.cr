@@ -102,6 +102,10 @@ class Dependency
         @repo_name = repo_name
     end
 
+    def url
+        return "https://#{@host}/#{@user_name}/#{@repo_name}"
+    end
+
     def Dependency.from_db(rs)
         Dependency.new(
             shards_id: rs.read(Int32),
@@ -111,6 +115,22 @@ class Dependency
             repo_name: rs.read(String),
         )
     end
+end
+
+def get_all_dependencies()
+    dependencies = [] of Dependency
+    db_file = get_db_file
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query "
+                SELECT shards_id, dependency_type, host, user_name, repo_name
+                FROM dependencies",
+                do |rs|
+            rs.each do
+                dependencies.push Dependency.from_db(rs)
+            end
+        end
+    end
+    return dependencies
 end
 
 def get_dependencies(shard_id)
