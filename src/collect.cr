@@ -183,6 +183,9 @@ def handle_shard_yml(data, path_to_dir)
 
     shard_yml_file = Path.new(path_to_dir, "shard.yml").to_s
     data.shard_yml = File.exists?(shard_yml_file)
+    if ! data.shard_yml
+        return
+    end
 
     shard = Shards::Spec.from_file(path_to_dir) # validate = true
 
