@@ -85,8 +85,8 @@ def mine
             end
             process_wrapper repo, root
         }
-    elsif options.recent
-        repos = get_repos
+    elsif options.recent > 0
+        repos = get_repos recent: options.recent
         repos["items"].each {|repo|
             counter += 1
             if 0 < options.limit && options.limit < counter
@@ -107,10 +107,10 @@ def mine
 end
 
 
-def get_repos
+def get_repos(recent = 3)
     username, token = read_config
     gh = GitHub.new(username, token)
-    gh.get_repos
+    gh.get_repos per_page: recent
 end
 
 def process_wrapper(url, root)
@@ -258,7 +258,7 @@ class Options
     getter keep : Bool
 
     property recent
-    getter recent : Bool
+    getter recent : Int32
 
     def initialize(
             verbose : Bool = false ,
@@ -267,7 +267,7 @@ class Options
             keep : Bool = false,
             url : String  = "",
             repos_file : String = "",
-            recent : Bool = false,
+            recent : Int32 = 0,
         )
         @verbose = verbose
         @recent = recent
@@ -299,7 +299,7 @@ def get_options
     OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
         parser.on("-v", "--verbose", "Verbose mode") { options.verbose = true }
-        parser.on("--recent", "Recently updated shards") { options.recent = true }
+        parser.on("--recent=NUMBER", "Recently updated shards") { |value| options.recent = value.to_i }
         parser.on("--keep", "Keep temporary directory") { options.keep = true }
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
         parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
