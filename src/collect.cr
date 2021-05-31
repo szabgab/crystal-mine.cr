@@ -69,6 +69,31 @@ def setup_logging(options)
     end
 end
 
+def process_repos_file(options, root)
+    repos = File.read_lines(options.repos_file)
+    counter = 0
+    repos.each {|repo|
+        counter += 1
+        if 0 < options.limit && options.limit < counter
+            break
+        end
+        process_wrapper repo, root
+    }
+end
+
+def process_recent_shards(options, root)
+    repos = get_repos recent: options.recent
+    counter = 0
+    repos["items"].each {|repo|
+        counter += 1
+        if 0 < options.limit && options.limit < counter
+            break
+        end
+        #p! repo
+        process_wrapper repo["html_url"], root
+    }
+end
+
 def mine
     options = get_options
     setup_logging(options)
@@ -76,29 +101,14 @@ def mine
 
     root = File.tempname
     FileUtils.mkdir(root)
-    counter = 0
+
     Log.info { "Root directory #{root}" }
     if options.url != ""
         process_wrapper options.url, root
     elsif options.repos_file != ""
-        repos = File.read_lines(options.repos_file)
-        repos.each {|repo|
-            counter += 1
-            if 0 < options.limit && options.limit < counter
-                break
-            end
-            process_wrapper repo, root
-        }
+        process_repos_file(options, root)
     elsif options.recent > 0
-        repos = get_repos recent: options.recent
-        repos["items"].each {|repo|
-            counter += 1
-            if 0 < options.limit && options.limit < counter
-                break
-            end
-            #p! repo
-            process_wrapper repo["html_url"], root
-        }
+        process_recent_shards(options, root)
     else
         Log.error { "Neither --url nor --repos not --recent was provided}" }
     end
