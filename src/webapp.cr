@@ -5,6 +5,7 @@ require "./mine/db"
 #code = Digest::MD5.hexdigest(email)
 #puts "https://www.gravatar.com/avatar/#{code}?s=100&d=blank"
 
+base_url = "https://crystal-mine.org"
 title = ""
 query = ""
 
@@ -29,7 +30,6 @@ get "/search" do |env|
   render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
 
-
 get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
   user_name = env.params.url["user_name"]
@@ -46,5 +46,41 @@ get "/github.com/:user_name/:repo_name" do |env|
 
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end
+
+get "/robots.txt" do |env|
+  env.response.content_type = "text/plain"
+  <<-ROBOTS
+    Sitemap: #{base_url}/sitemap.xml
+
+    User-agent: *
+
+    ROBOTS
+end
+
+get "/sitemap.xml" do |env|
+  now = Time.utc
+  now_str = now.to_s("%Y-%m-%d")
+  env.response.content_type = "application/xml"
+  xml = %{<?xml version="1.0" encoding="UTF-8"?>\n}
+  xml += %{<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n}
+  pages = ["", "about", "stats"]
+  pages.each {|page|
+    xml += %{  <url>\n}
+    xml += %{    <loc>#{base_url}/#{page}</loc>\n}
+    xml += %{    <lastmod>#{now_str}</lastmod>\n}
+    xml += %{  </url>\n}
+  }
+  shards = get_all
+  shards.each {|shard|
+    xml += %{  <url>\n}
+    xml += %{    <loc>#{base_url}/#{shard["host"]}/#{shard["user_name"]}/#{shard["repo_name"]}</loc>\n}
+    #time = Time.parse(shard["record_last_updated"], "%Y-%m-%d %H:%M:%S.%z", Time::Location::UTC)
+    #xml += %{    <lastmod>#{shard["record_last_updated"]}</lastmod>\n}
+    xml += %{  </url>\n}
+  }
+  xml += %{</urlset>\n};
+  xml
+end
+
 
 Kemal.run
