@@ -1,5 +1,7 @@
 # Crystal Mine
 
+Source code of the [Crystal Mine](https://crystal-mine.org/)
+
 ## Setup
 
 ### On Ubuntu:
