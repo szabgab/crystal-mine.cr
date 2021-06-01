@@ -8,7 +8,7 @@ require "./mine/github"
 require "./mine/options"
 require "./mine/tools"
 
-class Project
+class Shard
     property host
     getter host : String
 
@@ -202,7 +202,7 @@ def process(url, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
-    data = Project.new
+    data = Shard.new
     data.host           = host
     data.user_name      = user_name
     data.repo_name      = repo_name
