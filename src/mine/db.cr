@@ -79,6 +79,59 @@ def create_db
     end
 end
 
+class Shard
+    property host
+    getter host : String
+
+    property user_name
+    getter user_name : String
+
+    property repo_name
+    getter repo_name : String
+
+    property travis_ci
+    getter travis_ci : Bool
+
+    property github_actions
+    getter github_actions : Bool
+
+    property shard_yml
+    getter shard_yml : Bool
+
+    property name
+    getter name : String
+
+    property description
+    getter description : String
+
+    property version
+    getter version : String
+
+    property crystal
+    getter crystal : String
+
+    property license
+    getter license : String
+
+    property dependencies
+    getter dependencies = [] of Array(String)
+
+    def initialize
+        @host = ""
+        @user_name = ""
+        @repo_name = ""
+        @travis_ci = false
+        @github_actions = false
+        @shard_yml = false
+        @name = ""
+        @description = ""
+        @version = ""
+        @crystal = ""
+        @license = ""
+        @dependencies = [] of Array(String)
+    end
+end
+
 class Dependency
     property shards_id
     getter shards_id : Int32
