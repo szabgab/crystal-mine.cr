@@ -3,6 +3,5 @@
 
 <ul>
    <%- shards.each do |shard| -%>
-   <li><a href="/<%= shard["host"] %>/<%= shard["user_name"] %>/<%= shard["repo_name"] %>"><%= shard["user_name"] %>/<%= shard["repo_name"] %></a> - <%= shard["name"] %></li>
-   <%- end -%>
+   <li><a href="/<%= shard.host %>/<%= shard.user_name %>/<%= shard.repo_name %>"><%= shard.user_name %>/<%= shard.repo_name %></a> - <%= shard.name %></li>   <%- end -%>
 </ul>

@@ -1,4 +1,3 @@
-require "log"
 require "sqlite3"
 
 FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions, crystal, license"
@@ -80,6 +79,12 @@ def create_db
 end
 
 class Shard
+    include JSON::Serializable
+    def_equals @id, @host, @user_name, @repo_name, @travis_ci, @github_actions, @shard_yml, @name, @description, @version, @crystal, @license, @dependencies, @record_last_updated
+
+    property id
+    getter id : Int32
+
     property host
     getter host : String
 
@@ -104,6 +109,9 @@ class Shard
     property description
     getter description : String
 
+    property record_last_updated
+    getter record_last_updated : String
+
     property version
     getter version : String
 
@@ -116,20 +124,55 @@ class Shard
     property dependencies
     getter dependencies = [] of Array(String)
 
-    def initialize
-        @host = ""
-        @user_name = ""
-        @repo_name = ""
-        @travis_ci = false
-        @github_actions = false
-        @shard_yml = false
-        @name = ""
-        @description = ""
-        @version = ""
-        @crystal = ""
-        @license = ""
-        @dependencies = [] of Array(String)
+    def initialize(
+            id = 0,
+            host = "",
+            user_name = "",
+            repo_name = "",
+            travis_ci = false,
+            github_actions = false,
+            shard_yml = false,
+            name = "",
+            description = "",
+            record_last_updated = "",
+            version = "",
+            crystal = "",
+            license = "",
+            dependencies = [] of Array(String))
+        @id = id
+        @host = host
+        @user_name = user_name
+        @repo_name = repo_name
+        @travis_ci = travis_ci
+        @github_actions = github_actions
+        @shard_yml = shard_yml
+        @name = name
+        @description = description
+        @record_last_updated = record_last_updated
+        @version = version
+        @crystal = crystal
+        @license = license
+        @dependencies = dependencies
     end
+
+    def Shard.from_db(rs)
+        Shard.new(
+            id: rs.read(Int32),
+            host: rs.read(String),
+            user_name: rs.read(String),
+            repo_name: rs.read(String),
+            name: rs.read(String),
+            record_last_updated: rs.read(String), # TODO date
+            description: rs.read(String),
+            version: rs.read(String),
+            shard_yml: rs.read(Bool),
+            travis_ci: rs.read(Bool),
+            github_actions: rs.read(Bool),
+            crystal: rs.read(String),
+            license: rs.read(String),
+        )
+    end
+
 end
 
 class Dependency
@@ -248,41 +291,25 @@ end
 
 def get_project(host, user_name, repo_name)
     db_file = get_db_file
-    row = {} of String => String|Int32|Bool
+
+    shard = nil
     DB.open "sqlite3://#{db_file}" do |db|
         db.query "SELECT #{FIELDS} FROM shards WHERE host=? AND user_name=? AND repo_name=?",
             host, user_name, repo_name do |rs|
             rs.each do
                 # TODO it is a loop but there should be only one result (or maybe none) how to improve?
-                row = parse_row(rs)
+                shard = Shard.from_db(rs)
             end
         end
     end
-    return row
+    return shard
 end
 
-def parse_row(rs)
-    row = {} of String => String|Int32|Bool
-    row["id"] = rs.read(Int32)
-    row["host"] = rs.read(String)
-    row["user_name"] = rs.read(String)
-    row["repo_name"] = rs.read(String)
-    row["name"] = rs.read(String)
-    row["record_last_updated"] = rs.read(String) # TODO date
-    row["description"] = rs.read(String)
-    row["version"] = rs.read(String)
-    row["shard_yml"] = rs.read(Bool)
-    row["travis_ci"] = rs.read(Bool)
-    row["github_actions"] = rs.read(Bool)
-    row["crystal"] = rs.read(String)
-    row["license"] = rs.read(String)
-    return row
-end
 
 def get_shards(query)
     query = "%" + query + "%"
     db_file = get_db_file
-    results = [] of Hash(String, String|Int32|Bool)
+    shards = [] of Shard
     DB.open "sqlite3://#{db_file}" do |db|
         db.query "SELECT #{FIELDS}
             FROM shards
@@ -292,26 +319,24 @@ def get_shards(query)
                 OR description LIKE ?
         ",  query, query, query do |rs|
             rs.each do
-                row = parse_row(rs)
-                results.push(row)
+                shards.push Shard.from_db(rs)
             end
         end
     end
-    results
+    shards
 end
 
 def get_all()
     db_file = get_db_file
-    results = [] of Hash(String, String|Int32|Bool)
+    shards = [] of Shard
     DB.open "sqlite3://#{db_file}" do |db|
         db.query "SELECT #{FIELDS} FROM shards" do |rs|
             rs.each do
-                row = parse_row(rs)
-                results.push(row)
+                shards.push Shard.from_db(rs)
             end
         end
     end
-    results
+    shards
 end
 
 def store_in_db(data)
@@ -341,8 +366,8 @@ def store_shard_in_db(data)
 
     db_file = get_db_file
     DB.open "sqlite3://#{db_file}" do |db|
-        if project.has_key?("id")
-            rowid = project["id"]
+        if ! project.nil? && project.id != 0
+            rowid = project.id
             Log.info { "Row ID #{rowid}" }
             res = db.exec "UPDATE shards SET
                 host=?,

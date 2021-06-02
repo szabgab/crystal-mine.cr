@@ -36,10 +36,10 @@ get "/github.com/:user_name/:repo_name" do |env|
   repo_name = env.params.url["repo_name"]
   title = "#{user_name}/#{repo_name}"
   shard = get_project(host, user_name, repo_name)
-  if shard.empty?
+  if shard.nil?
     halt env, status_code: 404, response: "We don't know about this project"
   end
-  all_dependencies = get_dependencies(shard["id"])
+  all_dependencies = get_dependencies(shard.id)
   dependencies = all_dependencies.reject do |dep| dep.dependency_type != "dependencies" end
   development_dependencies = all_dependencies.reject do |dep| dep.dependency_type != "development_dependencies" end
   reverse_dependencies = get_reverse_dependencies(host, user_name, repo_name)
@@ -73,9 +73,9 @@ get "/sitemap.xml" do |env|
   shards = get_all
   shards.each {|shard|
     xml += %{  <url>\n}
-    xml += %{    <loc>#{base_url}/#{shard["host"]}/#{shard["user_name"]}/#{shard["repo_name"]}</loc>\n}
-    #time = Time.parse(shard["record_last_updated"], "%Y-%m-%d %H:%M:%S.%z", Time::Location::UTC)
-    #xml += %{    <lastmod>#{shard["record_last_updated"]}</lastmod>\n}
+    xml += %{    <loc>#{base_url}/#{shard.host}/#{shard.user_name}/#{shard.repo_name}</loc>\n}
+    #time = Time.parse(shard.record_last_updated, "%Y-%m-%d %H:%M:%S.%z", Time::Location::UTC)
+    #xml += %{    <lastmod>#{shard.record_last_updated}</lastmod>\n}
     xml += %{  </url>\n}
   }
   xml += %{</urlset>\n};

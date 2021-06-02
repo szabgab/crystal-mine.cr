@@ -26,7 +26,7 @@ describe "Database" do
     it "get_project" do
       db_fixture(cleanup: true) do
         proj = get_project("other", "szabgab", "crystal-mine.cr")
-        proj.empty?.should be_true
+        proj.nil?.should be_true
 
 
         proj = get_project("github.com", "szabgab", "crystal-mine.cr")

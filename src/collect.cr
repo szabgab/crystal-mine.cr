@@ -55,7 +55,7 @@ def process_dependencies(options, root)
         dependencies.each {|dep|
             shard = get_project(dep.host, dep.user_name, dep.repo_name)
             #Log.info { shard }
-            if shard.empty? && ! processed.includes?(dep.url)
+            if shard.nil? && ! processed.includes?(dep.url)
                 Log.info { dep.url }
                 processed.add(dep.url)
                 newly_processed = true
