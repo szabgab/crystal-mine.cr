@@ -1,26 +1,13 @@
 require "option_parser"
 
 class Options
-    property verbose
-    getter verbose : Bool
-
-    property url
-    getter url : String
-
-    property repos_file
-    getter repos_file : String
-
-    property limit
-    getter limit : Int32
-
-    property keep
-    getter keep : Bool
-
-    property recent
-    getter recent : Int32
-
-    property dependencies
-    getter dependencies : Bool
+    property verbose      : Bool
+    property url          : String
+    property repos_file   : String
+    property limit        : Int32
+    property keep         : Bool
+    property recent       : Int32
+    property dependencies : Bool
 
     def initialize(
             verbose : Bool = false ,
