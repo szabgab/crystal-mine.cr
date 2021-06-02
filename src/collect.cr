@@ -2,6 +2,7 @@ require "octokit"
 require "log"
 require "uri"
 require "yaml"
+require "file_utils"
 require "../lib/shards/src/spec"
 require "./mine/db"
 require "./mine/github"
@@ -71,8 +72,13 @@ def mine
     setup_logging(options)
     create_db
 
-    root = File.tempname
-    FileUtils.mkdir(root)
+    if ! ENV.has_key?("MINE_DATA")
+        raise "MINE_DATA is missing"
+    end
+    root = ENV["MINE_DATA"]
+    if ! File.exists?(root)
+        raise "#{root} does not exist"
+    end
 
     Log.info { "Root directory #{root}" }
     if options.url != ""
@@ -89,10 +95,9 @@ def mine
         process_dependencies(options, root)
     end
 
-    if ! options.keep
-        FileUtils.rm_rf(root)
-    end
-
+    # if ! options.keep
+    #     FileUtils.rm_rf(root)
+    # end
 end
 
 
@@ -140,13 +145,21 @@ def process(url, root)
     path = Path.new(path, repo_name).to_s
 
     # Clone repo
-    output, error, exit_code = capture("git", ["clone", "--depth", "1", url, path])
+    tempdir = File.tempname dir: root
+    #FileUtils.mkdir(tempdir)
+    #FileUtils.rm_rf(tempdir)
+    output, error, exit_code = capture("git", ["clone", "--depth", "1", url, tempdir])
     if exit_code != 0
         Log.error { "Exit code #{exit_code}" }
         Log.error { "STDERR #{error}" }
         Log.error { "STDOUT #{output}" }
+        FileUtils.rm_rf(tempdir)
         return
     end
+    if File.exists?(path)
+        FileUtils.rm_rf(path)
+    end
+    FileUtils.mv(tempdir, path)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)

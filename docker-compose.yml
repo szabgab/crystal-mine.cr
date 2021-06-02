@@ -8,6 +8,7 @@ services:
     - "127.0.0.1:6002:3000"
     restart: unless-stopped
     environment:
+      MINE_DATA: /data/
       MINE_DB: /data/mine.db
     volumes:
       - sqlite-data:/data
@@ -19,6 +20,7 @@ services:
     restart: unless-stopped
     entrypoint: cron -f -L3
     environment:
+      MINE_DATA: /data/
       MINE_DB: /data/mine.db
     volumes:
       - sqlite-data:/data
