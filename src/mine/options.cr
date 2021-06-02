@@ -10,23 +10,15 @@ class Options
     property dependencies : Bool
 
     def initialize(
-            verbose : Bool = false ,
-            github_token : String = "",
-            limit : Int32 = 0,
-            keep : Bool = false,
-            url : String  = "",
-            repos_file : String = "",
-            recent : Int32 = 0,
-            dependencies : Bool = false ,
+            @verbose      = false,
+            @github_token = "",
+            @limit        = 0,
+            @keep         = false,
+            @url          = "",
+            @repos_file   = "",
+            @recent       = 0,
+            @dependencies = false,
         )
-        @verbose = verbose
-        @recent = recent
-        @github_token = github_token
-        @limit = limit
-        @keep = keep
-        @url = url
-        @repos_file = repos_file
-        @dependencies = dependencies
     end
 end
 
