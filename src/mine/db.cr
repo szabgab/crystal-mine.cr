@@ -99,34 +99,21 @@ class Shard
     getter dependencies = [] of Array(String)
 
     def initialize(
-            id = 0,
-            host = "",
-            user_name = "",
-            repo_name = "",
-            travis_ci = false,
-            github_actions = false,
-            shard_yml = false,
-            name = "",
-            description = "",
-            record_last_updated = "",
-            version = "",
-            crystal = "",
-            license = "",
-            dependencies = [] of Array(String))
-        @id = id
-        @host = host
-        @user_name = user_name
-        @repo_name = repo_name
-        @travis_ci = travis_ci
-        @github_actions = github_actions
-        @shard_yml = shard_yml
-        @name = name
-        @description = description
-        @record_last_updated = record_last_updated
-        @version = version
-        @crystal = crystal
-        @license = license
-        @dependencies = dependencies
+            @id                  = 0,
+            @host                = "",
+            @user_name           = "",
+            @repo_name           = "",
+            @travis_ci           = false,
+            @github_actions      = false,
+            @shard_yml           = false,
+            @name                = "",
+            @description         = "",
+            @record_last_updated = "",
+            @version             = "",
+            @crystal             = "",
+            @license             = "",
+            @dependencies        = [] of Array(String)
+        )
     end
 
     def Shard.from_db(rs)
