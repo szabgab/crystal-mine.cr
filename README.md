@@ -2,19 +2,7 @@
 
 Source code of the [Crystal Mine](https://crystal-mine.org/)
 
-## Setup
-
-### On Ubuntu:
-
-```
-sudo apt-get install libsqlite3-dev
-sudo apt-get install sqlite3
-```
-
-```
-shards install
-```
-
+## Setup Development environment
 
 * Create a [Personal Access token](https://github.com/settings/tokens) with a name that you can easily recognize, e.g. "Crystal Mine Development Token" using the following rights:
 
@@ -32,30 +20,44 @@ user
 USERNAME:TOKEN
 ```
 
+## Docker compose for development
+
+1. Install Docker
+1. Install Docker compose (e.g. `pip install docker-compose`)
+1. Copy `docker-compose.override.yml.example` to `docker-compose.override.yml` and change it according to your taste.
+1. Build: `docker-compose build`
+1. Start `docker-compose up`
+1. Collect some data: `docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/repos.txt`
+1. Visit http://localhost:6002
+
+
+
 ## Run tests
 
 ```
-crystal spec
+docker exec -it crystal-minecr_cron_1 crystal spec
 ```
 
 Run test files separately
 
 ```
-KEMAL_ENV=test crystal spec/web_test_spec.cr
-KEMAL_ENV=test crystal spec/db_test_spec.cr
+docker exec -it crystal-minecr_cron_1 crystal spec/web_test_spec.cr
+docker exec -it crystal-minecr_cron_1 crystal spec/db_test_spec.cr
 ```
 
 ## Data Collecion:
 
+A single URL
+
 ```
-crystal src/mine.cr --url https://github.com/szabgab/crystal-mine.cr
+docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --url https://github.com/szabgab/crystal-mine.cr
 ```
 
 Or create a file with a list of repo URLs and then call
 
 ```
-crystal src/mine.cr --repos spec/repos.txt
-crystal src/mine.cr --repos spec/many_repos.txt
+docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/repos.txt
+docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/many_repos.txt
 ```
 
 ## Web application
@@ -93,15 +95,3 @@ npm run css-build
 1. Run `crystal/update.cr`  that will update the *.sql and *.json files in spec/
 1. Add columns to `FIELDS` and to `parse_row`
 1. Add columns to the display template
-
-
-## Docker compose for development
-
-1. Install Docker
-1. Install Docker compose `pip install docker-compose`
-1. Build: `docker-compose build`
-1. Start `docker-compose up`
-1. Collect some data: `docker exec -it crystal-minecr_cron_1 crystal src/mine.cr --repos spec/repos.txt`
-1. Visit http://localhost:6002
-
-For development copy docker-compose.override.yml.example to docker-compose.override.yml and change it according to your taste.
