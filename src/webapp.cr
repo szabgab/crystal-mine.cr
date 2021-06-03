@@ -62,7 +62,7 @@ get "/github.com/:user_name/:repo_name/source/*all" do |env|
   if File.directory?(src)
     if filepath != "" && filepath[-1] != "/"
       filepath += "/"
-    end  
+    end
     entries = Dir.entries(src.to_s).sort.reject { |entry| entry == ".." || entry == "." }
     render "src/views/directory.ecr", "src/views/layouts/layout.ecr"
   else
