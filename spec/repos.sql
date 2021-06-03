@@ -16,10 +16,10 @@ CREATE TABLE shards (
             license TEXT,
             UNIQUE (host, user_name, repo_name)
             );
-INSERT INTO shards VALUES(1,'github.com','szabgab','crystal-mine.cr','2021-05-30 06:37:49.435','Crystal Mine',replace('Experimenting with Crystal\n','\n',char(10)),'0.0.1',1,0,1,'','MIT');
-INSERT INTO shards VALUES(2,'github.com','luckyframework','lucky','2021-05-30 06:37:50.585','lucky','','0.27.2',1,0,1,'>=0.36.1, < 2.0.0','MIT');
-INSERT INTO shards VALUES(3,'github.com','soveran','toro','2021-05-30 06:37:51.633','toro','','0.4.2',1,0,1,'>= 0.36.0 - 1.0','MIT');
-INSERT INTO shards VALUES(4,'github.com','watzon','octokit.cr','2021-05-30 06:37:53.700','octokit','','0.1.0',1,1,0,'>= 1.0.0','MIT');
+INSERT INTO shards VALUES(1,'github.com','szabgab','crystal-mine.cr','2021-06-03 12:35:00.283','Crystal Mine',replace('Experimenting with Crystal\n','\n',char(10)),'0.0.1',1,0,1,'','MIT');
+INSERT INTO shards VALUES(2,'github.com','luckyframework','lucky','2021-06-03 12:35:01.518','lucky','','0.27.2',1,0,1,'>=0.36.1, < 2.0.0','MIT');
+INSERT INTO shards VALUES(3,'github.com','soveran','toro','2021-06-03 12:35:02.707','toro','','0.4.2',1,0,1,'>= 0.36.0 - 1.0','MIT');
+INSERT INTO shards VALUES(4,'github.com','watzon','octokit.cr','2021-06-03 12:35:06.451','octokit','','0.1.0',1,1,0,'>= 1.0.0','MIT');
 CREATE TABLE authors (
             id INTEGER PRIMARY KEY,
             name TEXT,

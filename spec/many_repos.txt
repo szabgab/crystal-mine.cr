@@ -6,9 +6,15 @@ https://github.com/jeromegn/slang
 https://github.com/kemalcr/kemal
 https://github.com/kostya/myhtml
 https://github.com/luckyframework/avram
+https://github.com/luckyframework/habitat
 https://github.com/luckyframework/lucky
+https://github.com/luckyframework/lucky_router
+https://github.com/luckyframework/lucky_task
+https://github.com/luckyframework/wordsmith
 https://github.com/mint-lang/mint
+https://github.com/placeos/calendar
 https://github.com/soveran/toro
+https://github.com/spider-gazelle/pinger
 https://github.com/spider-gazelle/spider-gazelle
 https://github.com/szabgab/crystal-mine.cr
 https://github.com/veelenga/awesome-crystal
