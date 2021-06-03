@@ -3,7 +3,7 @@ require "../src/mine/db"
 # updated the data for the tests
 
 
-["repos", "many_repos"].each {|name| 
+["repos", "many_repos"].each {|name|
     no_db_fixture(cleanup: true) do
         #puts ENV["MINE_DATA"]
         #puts ENV["MINE_DB"]
