@@ -3,10 +3,10 @@ require "sqlite3"
 FIELDS = "id, host, user_name, repo_name, name, record_last_updated, description, version, shard_yml, travis_ci, github_actions, crystal, license"
 
 def get_db_file : String
-    db_file = "data.db"
-    if ENV.has_key?("MINE_DB")
-        db_file =  ENV["MINE_DB"]
+    if ! ENV.has_key?("MINE_DB")
+        raise "MINE_DB is not defined"
     end
+    db_file =  ENV["MINE_DB"]
     Log.info { "DB file: #{db_file}" }
     return db_file
 end

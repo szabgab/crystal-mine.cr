@@ -2,6 +2,7 @@ require "./spec_helper"
 require "../src/mine/db"
 # updated the data for the tests
 
+
 no_db_fixture(cleanup: true) do
     puts ENV["MINE_DATA"]
     puts ENV["MINE_DB"]
@@ -10,7 +11,7 @@ no_db_fixture(cleanup: true) do
     stderr.should eq ""
     stdout.should eq ""
     exit_code.should eq 0
-    File.write("spec/data.json", get_all().to_json)
+    File.write("spec/repos.json", get_all().to_json)
 
-    `echo .dump | sqlite3 #{ENV["MINE_DB"]} > spec/data.sql`
+    `echo .dump | sqlite3 #{ENV["MINE_DB"]} > spec/repos.sql`
 end

@@ -16,7 +16,7 @@ def clean(items)
 end
 
 def full_database()
-  return Array(Shard).from_json(File.read("spec/data.json"))
+  return Array(Shard).from_json(File.read("spec/repos.json"))
 end
 
 
@@ -46,7 +46,7 @@ def db_fixture(cleanup = true)
   no_db_fixture(cleanup: cleanup) do
     # load data into temporary database
     # TODO eliminate the need for the sqlite3 cli
-    res = system(%{sqlite3 #{ENV["MINE_DB"]} < spec/data.sql})
+    res = system(%{sqlite3 #{ENV["MINE_DB"]} < spec/repos.sql})
     if ! res
       raise "Could not create fixture"
     end
