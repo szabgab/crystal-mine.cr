@@ -43,9 +43,34 @@ get "/github.com/:user_name/:repo_name" do |env|
   dependencies = all_dependencies.reject do |dep| dep.dependency_type != "dependencies" end
   development_dependencies = all_dependencies.reject do |dep| dep.dependency_type != "development_dependencies" end
   reverse_dependencies = get_reverse_dependencies(host, user_name, repo_name)
+  src = File.exists?(Path.new(ENV["MINE_DATA"], host, user_name, repo_name))
 
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end
+
+get "/github.com/:user_name/:repo_name/source/*all" do |env|
+  filepath = env.params.url["all"]
+
+  host = "github.com"
+  user_name = env.params.url["user_name"]
+  repo_name = env.params.url["repo_name"]
+  src = Path.new(ENV["MINE_DATA"], host, user_name, repo_name, filepath).to_s
+  if ! File.exists?(src)
+    halt env, status_code: 404, response: "We don't have this file #{src}"
+  end
+
+  if File.directory?(src)
+    if filepath != "" && filepath[-1] != "/"
+      filepath += "/"
+    end  
+    entries = Dir.entries(src.to_s).sort.reject { |entry| entry == ".." || entry == "." }
+    render "src/views/directory.ecr", "src/views/layouts/layout.ecr"
+  else
+    file_content = File.read(src)
+    render "src/views/file.ecr", "src/views/layouts/layout.ecr"
+  end
+end
+
 
 get "/robots.txt" do |env|
   env.response.content_type = "text/plain"

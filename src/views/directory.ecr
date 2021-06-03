@@ -1,0 +1,9 @@
+
+
+<div class="has-text-weight-light" id="path"><%= host %>/<%= user_name %>/<%= repo_name %>/source/<%= filepath %></div>
+
+<ul>
+    <%- entries.each do |entry| -%>
+    <li><a href="/<%= host %>/<%= user_name %>/<%= repo_name %>/source/<%= filepath %><%= entry %>"><%= entry %></a></li>
+    <%- end -%>
+</ul>
