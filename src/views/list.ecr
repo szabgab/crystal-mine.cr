@@ -1,0 +1,29 @@
+
+<h2>Shards</h2>
+
+<ul>
+   <%- shards.each do |shard| -%>
+   <li><a href="/<%= shard.host %>/<%= shard.user_name %>/<%= shard.repo_name %>"><%= shard.user_name %>/<%= shard.repo_name %></a> - <%= shard.name %></li>   <%- end -%>
+</ul>
+
+<div>
+Total: <%= total %>
+Page: <%= page %>
+Size: <%= size %>
+</div>
+
+<% if page != 1 %>
+<a href="/search?query=<%= query %>&page=1&size=<%= size %>">first</a>
+<% end %>
+
+<% if previous_page > 0 %>
+    <a href="/search?query=<%= query %>&page=<%= previous_page %>&size=<%= size %>">prev</a>
+<% end %>
+
+<% if page < number_of_pages %>
+    <a href="/search?query=<%= query %>&page=<%= next_page %>&size=<%= size %>">next</a>
+<% end %>
+
+<% if page != number_of_pages %>
+   <a href="/search?query=<%= query %>&page=<%= number_of_pages %>&size=<%= size %>">last</a>
+<% end %>

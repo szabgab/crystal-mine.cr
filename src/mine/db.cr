@@ -259,24 +259,45 @@ def get_project(host, user_name, repo_name)
 end
 
 
-def get_shards(query)
+def get_shards(query, limit = 10, offset = 0)
     query = "%" + query + "%"
     db_file = get_db_file
     shards = [] of Shard
-    DB.open "sqlite3://#{db_file}" do |db|
-        db.query "SELECT #{FIELDS}
+    total = 0
+    args = [query, query, query, limit, offset]
+    sql = %{
+        SELECT #{FIELDS}
             FROM shards
             WHERE
                 repo_name LIKE ?
                 OR name LIKE ?
                 OR description LIKE ?
-        ",  query, query, query do |rs|
+                ORDER BY user_name, repo_name
+                LIMIT ? OFFSET ?
+        }
+    sql_count = %{
+        SELECT COUNT(*)
+            FROM shards
+            WHERE
+                repo_name LIKE ?
+                OR name LIKE ?
+                OR description LIKE ?
+        }
+
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query sql,  args: args do |rs|
             rs.each do
                 shards.push Shard.from_db(rs)
             end
         end
+        db.query sql_count,  args: [query, query, query] do |rs|
+            rs.each do
+                total = rs.read(Int32)
+            end
+        end
+
     end
-    shards
+    {shards, total}
 end
 
 def get_all()
