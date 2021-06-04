@@ -3,3 +3,5 @@ lib/
 bin/
 node_modules/
 docker-compose.override.yml
+cron_error.log
+cron_output.log
