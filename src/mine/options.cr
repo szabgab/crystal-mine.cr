@@ -41,7 +41,7 @@ def get_options
 
     parser = OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
-        parser.on("-v", "--verbose", "Verbose mode") { options.verbose = true }
+        parser.on("--verbose", "Verbose mode") { options.verbose = true }
         parser.on("--recent=NUMBER", "Recently updated shards") { |value| options.recent = value.to_i }
         parser.on("--keep", "Keep temporary directory") { options.keep = true }
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
