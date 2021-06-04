@@ -13,17 +13,17 @@ Size: <%= size %>
 </div>
 
 <% if page != 1 %>
-<a href="/search?query=<%= query %>&page=1&size=<%= size %>">first</a>
+<a href="/search?query=<%= query %>&special=<%= special %>&page=1&size=<%= size %>">first</a>
 <% end %>
 
 <% if previous_page > 0 %>
-    <a href="/search?query=<%= query %>&page=<%= previous_page %>&size=<%= size %>">prev</a>
+    <a href="/search?query=<%= query %>&special=<%= special %>&page=<%= previous_page %>&size=<%= size %>">prev</a>
 <% end %>
 
 <% if page < number_of_pages %>
-    <a href="/search?query=<%= query %>&page=<%= next_page %>&size=<%= size %>">next</a>
+    <a href="/search?query=<%= query %>&special=<%= special %>&page=<%= next_page %>&size=<%= size %>">next</a>
 <% end %>
 
 <% if page != number_of_pages %>
-   <a href="/search?query=<%= query %>&page=<%= number_of_pages %>&size=<%= size %>">last</a>
+   <a href="/search?query=<%= query %>&special=<%= special %>&page=<%= number_of_pages %>&size=<%= size %>">last</a>
 <% end %>

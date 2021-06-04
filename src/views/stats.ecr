@@ -11,9 +11,9 @@
 
 <table id="stats">
 <tr><td>Total number of shards:</td><td><%= stats["all"] %></td></tr>
-<tr><td>No description:</td><td><%= stats["no_description"] %></td></tr>
-<tr><td>No name:</td><td><%= stats["no_name"] %></td></tr>
-<tr><td>No license:</td><td><%= stats["no_license"] %></td></tr>
+<tr><td>No description:</td><td><a href="/search?special=no-description"><%= stats["no_description"] %></a></td></tr>
+<tr><td>No name:</td><td><a href="/search?special=no-name"><%= stats["no_name"] %></a></td></tr>
+<tr><td>No license:</td><td><a href="/search?special=no-license"><%= stats["no_license"] %></a></td></tr>
 </table>
 
 <h2>Licenses</h2>

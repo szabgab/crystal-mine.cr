@@ -294,7 +294,15 @@ def get_project(host, user_name, repo_name)
 end
 
 
-def get_shards(query, limit = 10, offset = 0)
+def get_shards(query = "", special = "", limit = 10, offset = 0)
+    special_where = ""
+    if special == "no-license"
+        special_where = "license = '' AND"
+    elsif special == "no-name"
+        special_where = "name = '' AND"
+    elsif special == "no-description"
+        special_where = "description = '' AND"
+    end
     query = "%" + query + "%"
     db_file = get_db_file
     shards = [] of Shard
@@ -304,9 +312,11 @@ def get_shards(query, limit = 10, offset = 0)
         SELECT #{FIELDS}
             FROM shards
             WHERE
+                #{special_where}
+                (
                 repo_name LIKE ?
                 OR name LIKE ?
-                OR description LIKE ?
+                OR description LIKE ?)
                 ORDER BY user_name, repo_name
                 LIMIT ? OFFSET ?
         }
@@ -314,9 +324,12 @@ def get_shards(query, limit = 10, offset = 0)
         SELECT COUNT(*)
             FROM shards
             WHERE
+            #{special_where}
+                (
                 repo_name LIKE ?
                 OR name LIKE ?
                 OR description LIKE ?
+                )
         }
 
     DB.open "sqlite3://#{db_file}" do |db|
