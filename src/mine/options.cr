@@ -7,6 +7,7 @@ class Options
     property limit        : Int32
     property recent       : Int32
     property dependencies : Bool
+    property all          : Bool
 
     def initialize(
             @verbose      = false,
@@ -16,6 +17,7 @@ class Options
             @repos_file   = "",
             @recent       = 0,
             @dependencies = false,
+            @all          = false,
         )
     end
 end
@@ -45,6 +47,7 @@ def get_options
         parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
         parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| options.repos_file = value }
         parser.on("--dependencies", "Process dependencies") { options.dependencies = true }
+        parser.on("--all", "Process all the shards from GitHub") { options.all = true }
         parser.on("-h", "--help", "Show this help") do
             puts parser
             exit
@@ -60,8 +63,8 @@ def get_options
             exit(1)
         end
     end
-    if options.url == "" && options.repos_file == "" && options.recent == 0 && ! options.dependencies
-        STDERR.puts "ERROR: Either --url, --repos, --recent, or --dependencies is required"
+    if options.url == "" && options.repos_file == "" && options.recent == 0 && ! options.all && ! options.dependencies
+        STDERR.puts "ERROR: Either --url, --repos, --recent, --all, or --dependencies is required"
         STDERR.puts myparser
         exit(1)
     end

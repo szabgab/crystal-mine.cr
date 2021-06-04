@@ -6,7 +6,7 @@ describe "Collect" do
     it "nothing" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(CRYSTAL, ["src/mine.cr" ])
-            stderr.should contain("ERROR: Either --url, --repos, --recent, or --dependencies is required")
+            stderr.should contain("ERROR: Either --url, --repos, --recent, --all, or --dependencies is required")
             stdout.should eq ""
             exit_code.should eq 256
             File.exists?(ENV["MINE_DB"]).should be_false

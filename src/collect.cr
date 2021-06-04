@@ -30,6 +30,44 @@ def process_repos_file(options, root)
     }
 end
 
+def process_all_shards(options, root)
+    username, token = read_config
+    gh = GitHub.new(username, token)
+    counter = 0
+    page = 1
+    start_time = Time.utc
+    loop do
+        Log.info { "Fetching page #{page}" }
+        repos = gh.get_repos per_page: 100, page: page, sort: "updated"
+        Log.info { %{Received size: #{repos["items"].size} Total count: #{repos["total_count"]}} }
+        res = repos["items"].each {|repo|
+            counter += 1
+            current_time = Time.utc
+            Log.info { "Processing item #{counter} Elapsed time: #{current_time-start_time}" }
+            if 0 < options.limit && options.limit < counter
+                Log.info { %{Limit of #{options.limit} was reached by counter: #{counter}} }
+                break "done"
+            end
+            if repos["total_count"] < counter
+                Log.info { %{Total count of #{repos["total_count"]} was reached by counter: #{counter}} }
+                break "done"
+            end
+            if repos["items"].size == 0
+                Log.info { %{No items were received at counter: #{counter}} }
+                break "done"
+            end
+            process_wrapper repo["html_url"], root
+        }
+        if res == "done"
+            break
+        end
+        page += 1
+    end
+
+    end_time = Time.utc
+    Log.info { "Total Elapsed time: #{end_time-start_time}" }
+end
+
 def process_recent_shards(options, root)
     repos = get_repos recent: options.recent
     counter = 0
@@ -87,6 +125,8 @@ def mine
         process_repos_file(options, root)
     elsif options.recent > 0
         process_recent_shards(options, root)
+    elsif options.all
+        process_all_shards(options, root)
     else
         Log.error { "Neither --url nor --repos not --recent was provided}" }
     end
