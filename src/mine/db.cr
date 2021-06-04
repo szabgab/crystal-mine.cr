@@ -218,7 +218,7 @@ def get_stats()
         stats["all"] = count(db, "SELECT COUNT(*) FROM shards")
         stats["no_description"] = count(db, %{SELECT COUNT(*) FROM shards WHERE description = ""})
         stats["no_name"] = count(db, %{SELECT COUNT(*) FROM shards WHERE name = ""})
-        stats["no_license"] = count(db, %{SELECT COUNT(*) FROM shards WHERE license = ""}) 
+        stats["no_license"] = count(db, %{SELECT COUNT(*) FROM shards WHERE license = ""})
     end
     return stats
 end

@@ -3,18 +3,17 @@ require "../src/collect"
 
 
 describe "Collect" do
-    it "collect nothing" do
+    it "nothing" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(CRYSTAL, ["src/mine.cr" ])
-            stderr.should eq ""
-            stdout.should contain("ERROR - Neither --url nor --repos not --recent was provided")
-            exit_code.should eq 0 # TODO: probably should be something else
-            res = get_all()
-            res.empty?.should be_true
+            stderr.should contain("ERROR: Either --url, --repos, --recent, or --dependencies is required")
+            stdout.should eq ""
+            exit_code.should eq 256
+            File.exists?(ENV["MINE_DB"]).should be_false
         end
     end
 
-    it "collect one entry after creating db" do
+    it "one entry after creating db" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(CRYSTAL, ["src/mine.cr", "--url", "https://github.com/szabgab/crystal-mine.cr" ])
             stderr.should eq ""
@@ -28,7 +27,7 @@ describe "Collect" do
         end
     end
 
-    it "collect one entry into existing database where entry already exists" do
+    it "one entry into existing database where entry already exists" do
         db_fixture(cleanup: true) do
             res = get_all()
             clean(res)
@@ -46,7 +45,7 @@ describe "Collect" do
         end
     end
 
-    it "collect from repos.txt file into empty database" do
+    it "from repos.txt file into empty database" do
         no_db_fixture(cleanup: true) do
             stdout, stderr, exit_code = capture(CRYSTAL, ["src/mine.cr", "--repos", "spec/repos.txt" ])
             stderr.should eq ""

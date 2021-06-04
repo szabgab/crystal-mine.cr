@@ -39,7 +39,7 @@ def get_options
 
     options = Options.new
 
-    parser = OptionParser.parse do |parser|
+    myparser = OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
         parser.on("--verbose", "Verbose mode") { options.verbose = true }
         parser.on("--recent=NUMBER", "Recently updated shards") { |value| options.recent = value.to_i }
@@ -65,9 +65,9 @@ def get_options
     end
     if options.url == "" && options.repos_file == "" && options.recent == 0 && ! options.dependencies
         STDERR.puts "ERROR: Either --url, --repos, --recent, or --dependencies is required"
-        STDERR.puts parser
-        exit(1)    
-    end    
+        STDERR.puts myparser
+        exit(1)
+    end
 
     return options
 end
