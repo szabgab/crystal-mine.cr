@@ -56,6 +56,9 @@ end
 
 get "/github.com/:user_name/:repo_name/source/*all" do |env|
   filepath = env.params.url["all"]
+  if filepath[0..4] == ".git/"
+    halt env, status_code: 404, response: "We don't have this file #{filepath}"
+  end
 
   host = "github.com"
   user_name = env.params.url["user_name"]
@@ -69,7 +72,7 @@ get "/github.com/:user_name/:repo_name/source/*all" do |env|
     if filepath != "" && filepath[-1] != "/"
       filepath += "/"
     end
-    entries = Dir.entries(src.to_s).sort.reject { |entry| entry == ".." || entry == "." }
+    entries = Dir.entries(src.to_s).sort.reject { |entry| entry == ".." || entry == "." || entry == ".git" }
     render "src/views/directory.ecr", "src/views/layouts/layout.ecr"
   else
     file_content = File.read(src)
