@@ -9,6 +9,36 @@ require "./mine/github"
 require "./mine/options"
 require "./mine/tools"
 
+def mine
+    options = get_options
+    setup_logging(options)
+    create_db
+
+    if ! ENV.has_key?("MINE_DATA")
+        raise "MINE_DATA is missing"
+    end
+    root = ENV["MINE_DATA"]
+    if ! File.exists?(root)
+        raise "#{root} does not exist"
+    end
+
+    Log.info { "Root directory #{root}" }
+    if options.url != ""
+        process_wrapper options.url, root
+    elsif options.repos_file != ""
+        process_repos_file(options, root)
+    elsif options.recent > 0
+        process_recent_shards(options, root)
+    elsif options.all
+        process_all_shards(options, root)
+    else
+        Log.error { "Neither --url nor --repos not --recent was provided}" }
+    end
+
+    if options.dependencies
+        process_dependencies(options, root)
+    end
+end
 
 def setup_logging(options)
     if options.verbose
@@ -69,7 +99,11 @@ def process_all_shards(options, root)
 end
 
 def process_recent_shards(options, root)
-    repos = get_repos recent: options.recent
+    username, token = read_config
+    gh = GitHub.new(username, token)
+    # here we assume that the "recent" passed to options is less than 100, the max page size allowed by GitHub API
+    repos = gh.get_repos per_page: options.recent
+
     counter = 0
     repos["items"].each {|repo|
         counter += 1
@@ -105,43 +139,7 @@ def process_dependencies(options, root)
     end
 end
 
-def mine
-    options = get_options
-    setup_logging(options)
-    create_db
 
-    if ! ENV.has_key?("MINE_DATA")
-        raise "MINE_DATA is missing"
-    end
-    root = ENV["MINE_DATA"]
-    if ! File.exists?(root)
-        raise "#{root} does not exist"
-    end
-
-    Log.info { "Root directory #{root}" }
-    if options.url != ""
-        process_wrapper options.url, root
-    elsif options.repos_file != ""
-        process_repos_file(options, root)
-    elsif options.recent > 0
-        process_recent_shards(options, root)
-    elsif options.all
-        process_all_shards(options, root)
-    else
-        Log.error { "Neither --url nor --repos not --recent was provided}" }
-    end
-
-    if options.dependencies
-        process_dependencies(options, root)
-    end
-end
-
-
-def get_repos(recent = 3)
-    username, token = read_config
-    gh = GitHub.new(username, token)
-    gh.get_repos per_page: recent
-end
 
 def process_wrapper(url, root)
     process url, root
