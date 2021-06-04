@@ -94,10 +94,6 @@ def mine
     if options.dependencies
         process_dependencies(options, root)
     end
-
-    # if ! options.keep
-    #     FileUtils.rm_rf(root)
-    # end
 end
 
 

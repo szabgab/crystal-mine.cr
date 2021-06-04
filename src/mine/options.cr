@@ -5,7 +5,6 @@ class Options
     property url          : String
     property repos_file   : String
     property limit        : Int32
-    property keep         : Bool
     property recent       : Int32
     property dependencies : Bool
 
@@ -13,7 +12,6 @@ class Options
             @verbose      = false,
             @github_token = "",
             @limit        = 0,
-            @keep         = false,
             @url          = "",
             @repos_file   = "",
             @recent       = 0,
@@ -43,7 +41,6 @@ def get_options
         parser.banner = "Usage: miner.cr [arguments]"
         parser.on("--verbose", "Verbose mode") { options.verbose = true }
         parser.on("--recent=NUMBER", "Recently updated shards") { |value| options.recent = value.to_i }
-        parser.on("--keep", "Keep temporary directory") { options.keep = true }
         parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
         parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
         parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| options.repos_file = value }
