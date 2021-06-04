@@ -78,6 +78,24 @@ def create_db
     end
 end
 
+class Row
+    property name    : String
+    property value   : Int64
+
+    def initialize(
+        @name   = "",
+        @value  = 0,
+    )
+    end
+
+    def Row.from_db(rs)
+        Row.new(
+            name: rs.read(String),
+            value: rs.read(Int64),
+        )
+    end
+end
+
 class Shard
     include JSON::Serializable
     def_equals @id, @host, @user_name, @repo_name, @travis_ci, @github_actions, @shard_yml, @name, @description, @version, @crystal, @license, @dependencies, @record_last_updated
@@ -199,8 +217,25 @@ def get_stats()
     DB.open "sqlite3://#{db_file}" do |db|
         stats["all"] = count(db, "SELECT COUNT(*) FROM shards")
         stats["no_description"] = count(db, %{SELECT COUNT(*) FROM shards WHERE description = ""})
+        stats["no_name"] = count(db, %{SELECT COUNT(*) FROM shards WHERE name = ""})
+        stats["no_license"] = count(db, %{SELECT COUNT(*) FROM shards WHERE license = ""}) 
     end
     return stats
+end
+
+def get_licenses()
+    db_file = get_db_file
+
+    table = [] of Row
+    DB.open "sqlite3://#{db_file}" do |db|
+        sql = "SELECT license AS name, COUNT(license) AS cnt FROM shards GROUP BY license"
+        db.query sql do |rs|
+            rs.each do
+                table.push( Row.from_db(rs) )
+            end
+        end
+    end
+    return table
 end
 
 def get_reverse_dependencies(host, user_name, repo_name)

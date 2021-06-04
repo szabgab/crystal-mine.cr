@@ -20,6 +20,7 @@ end
 
 get "/stats" do
   stats = get_stats
+  licenses = get_licenses
   render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
 end
 
