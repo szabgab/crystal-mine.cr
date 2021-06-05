@@ -223,6 +223,66 @@ def get_stats()
     return stats
 end
 
+def get_crystal_versions()
+    db_file = get_db_file
+
+    #table = {} of String => Int32
+    table = {
+        "no"           => 0,
+        "*"            => 0,
+        "other"        => 0,
+        "just_version" => 0,
+        "minimum_ge"   => 0,
+        "minimum_ge_maximum_lt" => 0,
+        "tilde_lt" => 0,
+    }
+    others = [] of String
+    DB.open "sqlite3://#{db_file}" do |db|
+        # table["no"] = count(db, %{SELECT COUNT(*) FROM shards WHERE crystal = ""})
+        # table["*"]  = count(db, %{SELECT COUNT(*) FROM shards WHERE crystal = "*"})
+        # Has upper limit "< VERSION"  "<= VERSION"  "VERSION >" and "VERSION >="
+        # Has lower limit
+        # Has both limits (separated by a comma)
+        # Are there any valid cases when more than 2 requirements are used?
+        # Just a version number (legacy, means lower limit as in ">= VERSION")
+        # What does ~>  mean?
+        # Other
+
+        db.query "SELECT crystal FROM shards"  do |rs|
+            rs.each do
+                crystal_version = rs.read(String)
+                if crystal_version =~ /^\s*$/
+                    table["no"] += 1
+                elsif crystal_version =~ /^\s*\*\s*$/
+                    table["*"] += 1
+                elsif crystal_version =~ /^ *(\d+\.)?\d+\.\d+ *$/
+                    # 1.0.0
+                    table["just_version"] += 1
+                elsif crystal_version =~ /^ *>= *(\d+\.)?\d+\.\d+ *$/
+                    # >= 1.0.0
+                    # >= 0.35
+                    # Is it reauired to have a space between the >= and the first digit or is that optional?
+                    table["minimum_ge"] += 1
+                elsif crystal_version =~ /^ *>= *(\d+\.)?\d+\.\d+ *, *< *(\d+\.)?(\d+\.)?\d+ *$/
+                    # >= 0.35.0, < 2.0.0
+                    # Is it reauired to have a space between the >= and the first digit or is that optional?
+                    table["minimum_ge_maximum_lt"] += 1
+
+                elsif crystal_version =~ /^ *~> *(\d+\.)?(\d+\.)?\d+ *$/
+                    # ~> 1.0
+                    table["tilde_lt"] += 1
+                else
+                    table["other"] += 1
+                    others.push(crystal_version)
+                end
+            end
+        end
+
+    end
+    return {table, others}
+end
+
+
 def get_licenses()
     db_file = get_db_file
 
