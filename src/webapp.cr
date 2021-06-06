@@ -38,6 +38,11 @@ get "/search" do |env|
   render "src/views/list.ecr", "src/views/layouts/layout.ecr"
 end
 
+# github.com nothing special is shown as right now everything is from github.com
+get "/github.com" do
+  render "src/views/main.ecr", "src/views/layouts/layout.ecr"
+end
+
 # list all the projects of a user
 get "/github.com/:user_name" do |env|
   host = "github.com"
