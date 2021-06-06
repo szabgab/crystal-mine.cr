@@ -38,6 +38,14 @@ get "/search" do |env|
   render "src/views/list.ecr", "src/views/layouts/layout.ecr"
 end
 
+# list all the projects of a user
+get "/github.com/:user_name" do |env|
+  host = "github.com"
+  user_name = env.params.url["user_name"]
+  shards = get_shards_of_user(host, user_name)
+  render "src/views/user.ecr", "src/views/layouts/layout.ecr"
+end
+
 get "/github.com/:user_name/:repo_name" do |env|
   host = "github.com"
   user_name = env.params.url["user_name"]

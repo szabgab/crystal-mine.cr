@@ -353,6 +353,24 @@ def get_project(host, user_name, repo_name)
     return shard
 end
 
+def get_shards_of_user(host, user_name)
+    sql = %{
+        SELECT #{FIELDS}
+        FROM shards
+        WHERE host = ? AND user_name = ?
+    }
+    args = [host, user_name]
+    db_file = get_db_file
+    shards = [] of Shard
+    DB.open "sqlite3://#{db_file}" do |db|
+        db.query sql,  args: args do |rs|
+            rs.each do
+                shards.push Shard.from_db(rs)
+            end
+        end
+    end
+    shards
+end
 
 def get_shards(query = "", special = "", limit = 10, offset = 0)
     special_where = ""
