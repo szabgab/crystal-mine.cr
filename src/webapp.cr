@@ -56,6 +56,7 @@ get "/github.com/:user_name/:repo_name" do |env|
   render "src/views/shard.ecr", "src/views/layouts/layout.ecr"
 end
 
+# source
 get "/github.com/:user_name/:repo_name/source/*all" do |env|
   filepath = env.params.url["all"]
   if filepath[0..4] == ".git/"
@@ -70,6 +71,7 @@ get "/github.com/:user_name/:repo_name/source/*all" do |env|
     halt env, status_code: 404, response: "We don't have this file #{src}"
   end
 
+  Log.info { "source #{src}" }
   if File.directory?(src)
     if filepath != "" && filepath[-1] != "/"
       filepath += "/"
@@ -77,8 +79,37 @@ get "/github.com/:user_name/:repo_name/source/*all" do |env|
     entries = Dir.entries(src.to_s).sort.reject { |entry| entry == ".." || entry == "." || entry == ".git" }
     render "src/views/directory.ecr", "src/views/layouts/layout.ecr"
   else
-    file_content = File.read(src)
+    if src.downcase =~ /\.(png|ico|jpg|jpeg)$/
+      file_content = ""
+      image_path = "/github.com/#{user_name}/#{repo_name}/raw/#{filepath}"
+    else
+      file_content = File.read(src)
+      image_path = ""
+    end
     render "src/views/file.ecr", "src/views/layouts/layout.ecr"
+  end
+end
+
+# raw
+get "/github.com/:user_name/:repo_name/raw/*all" do |env|
+  filepath = env.params.url["all"]
+  if filepath[0..4] == ".git/"
+    halt env, status_code: 404, response: "We don't have this file #{filepath}"
+  end
+
+  host = "github.com"
+  user_name = env.params.url["user_name"]
+  repo_name = env.params.url["repo_name"]
+  src = Path.new(ENV["MINE_DATA"], host, user_name, repo_name, filepath).to_s
+  if ! File.exists?(src)
+    halt env, status_code: 404, response: "We don't have this file #{src}"
+  end
+
+  Log.info { "raw #{src}" }
+  if File.directory?(src)
+    halt env, status_code: 404, response: "We don't have this directory #{src}"
+  else
+    send_file env, src
   end
 end
 

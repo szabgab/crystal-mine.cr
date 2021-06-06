@@ -2,5 +2,11 @@
 <div class="has-text-weight-light" id="path"><%= host %>/<%= user_name %>/<%= repo_name %>/source/<%= filepath %></div>
 
 <pre>
-<%= file_content %>
+<% if image_path != "" %>
+   <img src="<%= image_path %>" />
+<% end %>
+
+<% if file_content != "" %>
+   <%= file_content %>
+<% end %>
 </pre>
