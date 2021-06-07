@@ -24,7 +24,7 @@ def mine
 
     Log.info { "Root directory #{root}" }
     if options.url != ""
-        process_wrapper(options.url, root)
+        process_by_url(options, options.url, root)
     elsif options.repos_file != ""
         process_repos_file(options, root)
     elsif options.recent > 0
@@ -51,16 +51,28 @@ end
 def process_repos_file(options, root)
     repos = File.read_lines(options.repos_file)
     counter = 0
-    repos.each {|repo|
+    repos.each {|repo_url|
         counter += 1
         if 0 < options.limit && options.limit < counter
             break
         end
-        process_wrapper(repo, root)
+        process_by_url(options, repo_url, root)
         if options.sleep != 0
             sleep(options.sleep)
         end
     }
+end
+
+def process_by_url(options, repo_url, root)
+    host, user_name, repo_name = parse_url(repo_url)
+    Log.debug { host }
+
+    username, token = read_config
+    gh = GitHub.new(username, token)
+
+    repo = gh.get_repo_details("#{user_name}/#{repo_name}")
+
+    process_wrapper(repo, repo_url, root)
 end
 
 def process_all_shards(options, root)
@@ -94,7 +106,7 @@ def process_all_shards(options, root)
                 Log.info { %{No items were received at counter: #{counter}} }
                 break "done"
             end
-            process_wrapper(repo["html_url"], root)
+            process_wrapper(repo, repo["html_url"], root)
             if options.sleep != 0
                 sleep(options.sleep)
             end
@@ -121,8 +133,7 @@ def process_recent_shards(options, root)
         if 0 < options.limit && options.limit < counter
             break
         end
-        Log.debug { repo }
-        process_wrapper(repo["html_url"], root)
+        process_wrapper(repo, repo["html_url"], root)
         if options.sleep != 0
             sleep(options.sleep)
         end
@@ -146,7 +157,7 @@ def process_dependencies(options, root)
                 Log.info { dep.url }
                 processed.add(dep.url)
                 newly_processed = true
-                process_wrapper(dep.url, root)
+                process_by_url(options, dep.url, root)
             end
         }
         break if ! newly_processed
@@ -155,7 +166,9 @@ end
 
 
 
-def process_wrapper(url, root)
+def process_wrapper(repo, url, root)
+    Log.debug { repo }
+
     process url, root
 rescue err
     Log.error { "There was an exception in #{url} #{err}" }
@@ -163,7 +176,15 @@ rescue err
 end
 
 
+    # https://github.com/szabgab/crystal-mine.cr
 def parse_url(url) : Tuple(String, String, String)
+    # TODO check if the URL looks good?
+    match = %r{^https?://github.com/[\w.-]+/[\w.-]+$}.match(url)
+    if ! match
+        Log.error { "URL '#{url}' does not match" }
+        raise "URL '#{url}' does not match"
+    end
+
     uri = URI.parse url.gsub(/\.git$/, "")
     host = uri.host.to_s
     user_name, repo_name = uri.path[1..].split("/")
@@ -172,14 +193,6 @@ end
 
 def process(url, root)
     Log.info { "Process URL '#{url}' directory #{root}" }
-    # https://github.com/szabgab/crystal-mine.cr
-
-    # TODO check if the URL looks good?
-    match = %r{^https?://github.com/[\w.-]+/[\w.-]+$}.match(url)
-    if ! match
-        Log.error { "URL does not match" }
-        return
-    end
 
     host, user_name, repo_name = parse_url(url)
 

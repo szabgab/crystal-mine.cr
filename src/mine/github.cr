@@ -126,11 +126,8 @@ class GitHub
 
     def get_repo_details(full_name)
         response = fetch("/repos/#{full_name}")
-        puts response.body
-        # if response.body == "[]"
-        #     return [] of Release
-        # end
-        # releases = Releases.from_json(response.body)
+        #puts response.body
+        return GitHubRepo.from_json(response.body)
     end
 
     def fetch(url)
