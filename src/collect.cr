@@ -183,22 +183,7 @@ def process(url, root)
     FileUtils.mkdir_p(path)
     path = Path.new(path, repo_name).to_s
 
-    # Clone repo
-    tempdir = File.tempname dir: root
-    #FileUtils.mkdir(tempdir)
-    #FileUtils.rm_rf(tempdir)
-    output, error, exit_code = capture("git", ["clone", "--depth", "1", url, tempdir])
-    if exit_code != 0
-        Log.error { "Exit code #{exit_code}" }
-        Log.error { "STDERR #{error}" }
-        Log.error { "STDOUT #{output}" }
-        FileUtils.rm_rf(tempdir)
-        return
-    end
-    if File.exists?(path)
-        FileUtils.rm_rf(path)
-    end
-    FileUtils.mv(tempdir, path)
+    clone_repo(url, path, root)
 
     Log.info { "Deal with repo" }
     # check for certain files (.travis.yml, .github/workflows/*.yml)
@@ -218,6 +203,26 @@ def process(url, root)
     rows_affected, last_insert_id = store_in_db(data)
     Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
+
+def clone_repo(url, path, root)
+    Log.info { "Downloading #{url} to #{path}" }
+    tempdir = File.tempname dir: root
+    #FileUtils.mkdir(tempdir)
+    #FileUtils.rm_rf(tempdir)
+    output, error, exit_code = capture("git", ["clone", "--depth", "1", url, tempdir])
+    if exit_code != 0
+        Log.error { "Exit code #{exit_code}" }
+        Log.error { "STDERR #{error}" }
+        Log.error { "STDOUT #{output}" }
+        FileUtils.rm_rf(tempdir)
+        return
+    end
+    if File.exists?(path)
+        FileUtils.rm_rf(path)
+    end
+    FileUtils.mv(tempdir, path)
+end
+
 
 def handle_shard_yml(data, path_to_dir)
     Log.info { "Handling shard.yml" }
