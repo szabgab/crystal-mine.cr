@@ -183,26 +183,31 @@ def process(url, root)
     FileUtils.mkdir_p(path)
     path = Path.new(path, repo_name).to_s
 
-    clone_repo(url, path, root)
-
-    Log.info { "Deal with repo" }
-    # check for certain files (.travis.yml, .github/workflows/*.yml)
     data = Shard.new
     data.host           = host
     data.user_name      = user_name
     data.repo_name      = repo_name
 
-    Log.info { Path.new(path, ".travis.yml").to_s }
-    data.travis_ci = File.exists?(Path.new(path, ".travis.yml").to_s)
-    # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
-    data.github_actions = File.exists?(Path.new(path, ".github", "workflows").to_s)
-
+    clone_repo(url, path, root)
+    process_repo(data, path)
     handle_shard_yml(data, path)
 
     Log.info { "data: #{data}" }
     rows_affected, last_insert_id = store_in_db(data)
     Log.info { "rows_affected: #{rows_affected} last_insert_id #{last_insert_id}" }
 end
+
+
+def process_repo(data, path)
+    Log.info { "Deal with repo" }
+    # check for certain files (.travis.yml, .github/workflows/*.yml)
+
+    Log.info { Path.new(path, ".travis.yml").to_s }
+    data.travis_ci = File.exists?(Path.new(path, ".travis.yml").to_s)
+    # TODO: Github Actions check if there are *.yml or *.yaml files in the directory?
+    data.github_actions = File.exists?(Path.new(path, ".github", "workflows").to_s)
+end
+
 
 def clone_repo(url, path, root)
     Log.info { "Downloading #{url} to #{path}" }
