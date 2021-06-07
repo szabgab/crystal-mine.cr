@@ -57,6 +57,9 @@ def process_repos_file(options, root)
             break
         end
         process_wrapper repo, root
+        if options.sleep != 0
+            sleep(options.sleep)
+        end
     }
 end
 
@@ -92,6 +95,9 @@ def process_all_shards(options, root)
                 break "done"
             end
             process_wrapper repo["html_url"], root
+            if options.sleep != 0
+                sleep(options.sleep)
+            end
         }
         if res == "done"
             break
@@ -117,6 +123,9 @@ def process_recent_shards(options, root)
         end
         #p! repo
         process_wrapper repo["html_url"], root
+        if options.sleep != 0
+            sleep(options.sleep)
+        end
     }
 end
 
