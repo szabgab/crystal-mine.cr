@@ -24,7 +24,7 @@ def mine
 
     Log.info { "Root directory #{root}" }
     if options.url != ""
-        process_wrapper options.url, root
+        process_wrapper(options.url, root)
     elsif options.repos_file != ""
         process_repos_file(options, root)
     elsif options.recent > 0
@@ -56,7 +56,7 @@ def process_repos_file(options, root)
         if 0 < options.limit && options.limit < counter
             break
         end
-        process_wrapper repo, root
+        process_wrapper(repo, root)
         if options.sleep != 0
             sleep(options.sleep)
         end
@@ -94,7 +94,7 @@ def process_all_shards(options, root)
                 Log.info { %{No items were received at counter: #{counter}} }
                 break "done"
             end
-            process_wrapper repo["html_url"], root
+            process_wrapper(repo["html_url"], root)
             if options.sleep != 0
                 sleep(options.sleep)
             end
@@ -121,8 +121,8 @@ def process_recent_shards(options, root)
         if 0 < options.limit && options.limit < counter
             break
         end
-        #p! repo
-        process_wrapper repo["html_url"], root
+        Log.debug { repo }
+        process_wrapper(repo["html_url"], root)
         if options.sleep != 0
             sleep(options.sleep)
         end
@@ -146,7 +146,7 @@ def process_dependencies(options, root)
                 Log.info { dep.url }
                 processed.add(dep.url)
                 newly_processed = true
-                process_wrapper dep.url, root
+                process_wrapper(dep.url, root)
             end
         }
         break if ! newly_processed
