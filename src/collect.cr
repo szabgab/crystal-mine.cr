@@ -69,6 +69,11 @@ def process_all_shards(options, root)
     loop do
         Log.info { "Fetching page #{page}" }
         repos = gh.get_repos per_page: 100, page: page, sort: "updated"
+        if ! repos.has_key?("total_count")
+            Log.error { %{Missing total_count} }
+            Log.error { %{Received: #{repos}} }
+            break
+        end
         Log.info { %{Received size: #{repos["items"].size} Total count: #{repos["total_count"]}} }
         res = repos["items"].each {|repo|
             counter += 1
