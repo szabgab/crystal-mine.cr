@@ -79,44 +79,52 @@ def process_all_shards(root)
     username, token = read_config
     gh = GitHub.new(username, token)
     counter = 0
-    page = 1
     start_time = Time.utc
-    loop do
-        Log.info { "Fetching page #{page}" }
-        repos = gh.get_repos per_page: 100, page: page, sort: "updated"
-        if ! repos.has_key?("total_count")
-            Log.error { %{Missing total_count} }
-            Log.error { %{Received: #{repos}} }
-            break
-        end
-        Log.info { %{Received size: #{repos["items"].size} Total count: #{repos["total_count"]}} }
-        res = repos["items"].each {|repo|
-            counter += 1
-            current_time = Time.utc
-            Log.info { "Processing item #{counter} Elapsed time: #{current_time-start_time}" }
-            if 0 < Options.limit && Options.limit < counter
-                Log.info { %{Limit of #{Options.limit} was reached by counter: #{counter}} }
-                break "done"
-            end
-            if repos["total_count"] < counter
-                Log.info { %{Total count of #{repos["total_count"]} was reached by counter: #{counter}} }
-                break "done"
-            end
-            if repos["items"].size == 0
-                Log.info { %{No items were received at counter: #{counter}} }
-                break "done"
-            end
-            process_wrapper(repo, repo["html_url"], root)
-            if Options.sleep != 0
-                sleep(Options.sleep)
-            end
-        }
-        if res == "done"
-            break
-        end
-        page += 1
-    end
 
+    "abcdefghijklmnopqruvwxyz".each_char {|chr|
+        page = 1
+        loop do
+            if page > 10
+                # https://docs.github.com/v3/search/
+                Log.info { "Only the first 1000 search results are available. We are done with letter #{chr}"}
+                break
+            end
+            query = "language:crystal+#{chr}"
+            Log.info { "Fetching page #{page} for '#{query}'" }
+            repos = gh.get_repos query: query, per_page: 100, page: page, sort: "updated"
+            if ! repos.has_key?("total_count")
+                Log.error { %{Missing total_count} }
+                Log.error { %{Received: #{repos}} }
+                break
+            end
+            Log.info { %{Received size: #{repos["items"].size} Total count: #{repos["total_count"]}} }
+            res = repos["items"].each {|repo|
+                counter += 1
+                current_time = Time.utc
+                Log.info { "Processing item #{counter} Elapsed time: #{current_time-start_time}" }
+                if 0 < Options.limit && Options.limit < counter
+                    Log.info { %{Limit of #{Options.limit} was reached by counter: #{counter}} }
+                    break "done"
+                end
+                if repos["total_count"] < counter
+                    Log.info { %{Total count of #{repos["total_count"]} was reached by counter: #{counter}} }
+                    break "done"
+                end
+                if repos["items"].size == 0
+                    Log.info { %{No items were received at counter: #{counter}} }
+                    break "done"
+                end
+                process_wrapper(repo, repo["html_url"], root)
+                if Options.sleep != 0
+                    sleep(Options.sleep)
+                end
+            }
+            if res == "done"
+                break
+            end
+            page += 1
+        end
+    }
     end_time = Time.utc
     Log.info { "Total Elapsed time: #{end_time-start_time}" }
 end
@@ -229,6 +237,9 @@ end
 
 
 def clone_repo(url, path, root)
+    if Options.all && File.exists?(path)
+        return
+    end
     Log.info { "Downloading #{url} to #{path}" }
     tempdir = File.tempname dir: root
     #FileUtils.mkdir(tempdir)
