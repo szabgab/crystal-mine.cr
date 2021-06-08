@@ -1,27 +1,14 @@
 require "option_parser"
 
 class Options
-    property verbose      : Bool
-    property url          : String
-    property repos_file   : String
-    property limit        : Int32
-    property sleep        : Int32
-    property recent       : Int32
-    property dependencies : Bool
-    property all          : Bool
-
-    def initialize(
-            @verbose      = false,
-            @github_token = "",
-            @limit        = 0,
-            @sleep        = 0,
-            @url          = "",
-            @repos_file   = "",
-            @recent       = 0,
-            @dependencies = false,
-            @all          = false,
-        )
-    end
+    class_property verbose      = false
+    class_property url          = ""
+    class_property repos_file   = ""
+    class_property limit        = 0
+    class_property sleep        = 0
+    class_property recent       = 0
+    class_property dependencies = false
+    class_property all          = false
 end
 
 def get_options
@@ -39,18 +26,16 @@ def get_options
     # store the start date of our current update process and only update records that have not been updated since
     # that time to avoid updating the same record because multiple occurance (especially about people.)
 
-    options = Options.new
-
     myparser = OptionParser.parse do |parser|
         parser.banner = "Usage: miner.cr [arguments]"
-        parser.on("--verbose", "Verbose mode") { options.verbose = true }
-        parser.on("--recent=NUMBER", "Recently updated shards") { |value| options.recent = value.to_i }
-        parser.on("--sleep=SECONDS", "How much to wait between processing shards") { |value| options.sleep = value.to_i }
-        parser.on("--limit=LIMIT", "How many URLs to process?") { |value| options.limit = value.to_i }
-        parser.on("--url=URL", "Process this GitHub URL") { |value| options.url = value }
-        parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| options.repos_file = value }
-        parser.on("--dependencies", "Process dependencies") { options.dependencies = true }
-        parser.on("--all", "Process all the shards from GitHub") { options.all = true }
+        parser.on("--verbose", "Verbose mode") { Options.verbose = true }
+        parser.on("--recent=NUMBER", "Recently updated shards") { |value| Options.recent = value.to_i }
+        parser.on("--sleep=SECONDS", "How much to wait between processing shards") { |value| Options.sleep = value.to_i }
+        parser.on("--limit=LIMIT", "How many URLs to process?") { |value| Options.limit = value.to_i }
+        parser.on("--url=URL", "Process this GitHub URL") { |value| Options.url = value }
+        parser.on("--repos=PATH", "Process GitHub URLs listed in this file") { |value| Options.repos_file = value }
+        parser.on("--dependencies", "Process dependencies") { Options.dependencies = true }
+        parser.on("--all", "Process all the shards from GitHub") { Options.all = true }
         parser.on("-h", "--help", "Show this help") do
             puts parser
             exit
@@ -66,11 +51,9 @@ def get_options
             exit(1)
         end
     end
-    if options.url == "" && options.repos_file == "" && options.recent == 0 && ! options.all && ! options.dependencies
+    if Options.url == "" && Options.repos_file == "" && Options.recent == 0 && ! Options.all && ! Options.dependencies
         STDERR.puts "ERROR: Either --url, --repos, --recent, --all, or --dependencies is required"
         STDERR.puts myparser
         exit(1)
     end
-
-    return options
 end

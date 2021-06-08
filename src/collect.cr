@@ -10,8 +10,8 @@ require "./mine/options"
 require "./mine/tools"
 
 def mine
-    options = get_options
-    setup_logging(options)
+    get_options
+    setup_logging
     create_db
 
     if ! ENV.has_key?("MINE_DATA")
@@ -23,47 +23,47 @@ def mine
     end
 
     Log.info { "Root directory #{root}" }
-    if options.url != ""
-        process_by_url(options, options.url, root)
-    elsif options.repos_file != ""
-        process_repos_file(options, root)
-    elsif options.recent > 0
-        process_recent_shards(options, root)
-    elsif options.all
-        process_all_shards(options, root)
+    if Options.url != ""
+        process_by_url(Options.url, root)
+    elsif Options.repos_file != ""
+        process_repos_file(root)
+    elsif Options.recent > 0
+        process_recent_shards(root)
+    elsif Options.all
+        process_all_shards(root)
     else
         Log.error { "Neither --url nor --repos not --recent was provided}" }
     end
 
-    if options.dependencies
-        process_dependencies(options, root)
+    if Options.dependencies
+        process_dependencies(root)
     end
 end
 
-def setup_logging(options)
-    if options.verbose
+def setup_logging
+    if Options.verbose
         Log.setup(:trace)
     else
         Log.setup(:warn)
     end
 end
 
-def process_repos_file(options, root)
-    repos = File.read_lines(options.repos_file)
+def process_repos_file(root)
+    repos = File.read_lines(Options.repos_file)
     counter = 0
     repos.each {|repo_url|
         counter += 1
-        if 0 < options.limit && options.limit < counter
+        if 0 < Options.limit && Options.limit < counter
             break
         end
-        process_by_url(options, repo_url, root)
-        if options.sleep != 0
-            sleep(options.sleep)
+        process_by_url(repo_url, root)
+        if Options.sleep != 0
+            sleep(Options.sleep)
         end
     }
 end
 
-def process_by_url(options, repo_url, root)
+def process_by_url(repo_url, root)
     host, user_name, repo_name = parse_url(repo_url)
     Log.debug { host }
 
@@ -75,7 +75,7 @@ def process_by_url(options, repo_url, root)
     process_wrapper(repo, repo_url, root)
 end
 
-def process_all_shards(options, root)
+def process_all_shards(root)
     username, token = read_config
     gh = GitHub.new(username, token)
     counter = 0
@@ -94,8 +94,8 @@ def process_all_shards(options, root)
             counter += 1
             current_time = Time.utc
             Log.info { "Processing item #{counter} Elapsed time: #{current_time-start_time}" }
-            if 0 < options.limit && options.limit < counter
-                Log.info { %{Limit of #{options.limit} was reached by counter: #{counter}} }
+            if 0 < Options.limit && Options.limit < counter
+                Log.info { %{Limit of #{Options.limit} was reached by counter: #{counter}} }
                 break "done"
             end
             if repos["total_count"] < counter
@@ -107,8 +107,8 @@ def process_all_shards(options, root)
                 break "done"
             end
             process_wrapper(repo, repo["html_url"], root)
-            if options.sleep != 0
-                sleep(options.sleep)
+            if Options.sleep != 0
+                sleep(Options.sleep)
             end
         }
         if res == "done"
@@ -121,26 +121,26 @@ def process_all_shards(options, root)
     Log.info { "Total Elapsed time: #{end_time-start_time}" }
 end
 
-def process_recent_shards(options, root)
+def process_recent_shards(root)
     username, token = read_config
     gh = GitHub.new(username, token)
     # here we assume that the "recent" passed to options is less than 100, the max page size allowed by GitHub API
-    repos = gh.get_repos per_page: options.recent
+    repos = gh.get_repos per_page: Options.recent
 
     counter = 0
     repos["items"].each {|repo|
         counter += 1
-        if 0 < options.limit && options.limit < counter
+        if 0 < Options.limit && Options.limit < counter
             break
         end
         process_wrapper(repo, repo["html_url"], root)
-        if options.sleep != 0
-            sleep(options.sleep)
+        if Options.sleep != 0
+            sleep(Options.sleep)
         end
     }
 end
 
-def process_dependencies(options, root)
+def process_dependencies(root)
     # get all the shards that are listed as dependencies
     # go over them and if they are not in the database try to add them to the database
     # do this again and again till we processed all the missing dependencies
@@ -157,7 +157,7 @@ def process_dependencies(options, root)
                 Log.info { dep.url }
                 processed.add(dep.url)
                 newly_processed = true
-                process_by_url(options, dep.url, root)
+                process_by_url(dep.url, root)
             end
         }
         break if ! newly_processed
