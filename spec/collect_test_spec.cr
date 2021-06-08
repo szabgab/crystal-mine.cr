@@ -27,6 +27,18 @@ describe "Collect" do
         end
     end
 
+    it "one entry using all and limit after creating db" do
+        no_db_fixture(cleanup: true) do
+            stdout, stderr, exit_code = capture(CRYSTAL, ["src/mine.cr", "--all", "--limit", "2" ])
+            stderr.should eq ""
+            stdout.should eq ""
+            exit_code.should eq 0
+            res = get_all()
+            res.size().should eq 2
+        end
+    end
+
+
     it "one entry into existing database where entry already exists" do
         db_fixture(cleanup: true) do
             res = get_all()
