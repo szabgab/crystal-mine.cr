@@ -84,8 +84,7 @@ Run with sentry
 Generate CSS file (public/bulma.css) from SCSS file (sass/mystles.scss):
 
 ```
-npm install
-npm run css-build
+docker run --rm -it -v$(pwd):/opt --workdir=/opt node:14.15 npm install && npm run css-build
 ```
 
 ## Add fields to collect and display
