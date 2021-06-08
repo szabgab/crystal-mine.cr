@@ -3,8 +3,9 @@ services:
   web:
     volumes:
       - .:/opt
-    entrypoint: ./bin/sentry-docker -b "crystal build src/webapp.cr -o bin/webapp" -r bin/webapp
+    entrypoint: bash development_web.sh
   cron:
     volumes:
       - .:/opt
+    entrypoint: bash development_cron.sh
 
