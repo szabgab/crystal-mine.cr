@@ -16,5 +16,6 @@ RUN shards install --ignore-crystal-version
 RUN crystal build --release lib/sentry/src/sentry_cli.cr -o ./bin/sentry-docker
 
 COPY . .
+RUN crystal build --release src/webapp.cr -o ./bin/webapp
 RUN crontab /opt/crontab.txt
-CMD ["crystal", "run", "src/webapp.cr"]
+CMD ["./bin/webapp"]
