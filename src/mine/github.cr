@@ -85,7 +85,12 @@ class GitHub
         # sort can be stars, forks, help-wanted-issues, updated
         order = "desc"
         response = fetch("/search/repositories?q=#{query}&per_page=#{per_page}&sort=#{sort}&page=#{page}&orde=#{order}")
-        repos = GitHubRepos.from_json(response.body)
+        begin
+            repos = GitHubRepos.from_json(response.body)
+        rescue
+            Log.error {response.body}
+            raise "Oups"
+        end
         return repos
     end
 
