@@ -84,11 +84,12 @@ class GitHub
         # per_page max is 100
         # sort can be stars, forks, help-wanted-issues, updated
         order = "desc"
-        response = fetch("/search/repositories?q=#{query}&per_page=#{per_page}&sort=#{sort}&page=#{page}&orde=#{order}")
+        response = fetch("/search/repositories?q=#{query}&per_page=#{per_page}&sort=#{sort}&page=#{page}&order=#{order}")
         begin
             repos = GitHubRepos.from_json(response.body)
         rescue
             Log.error {response.body}
+            # {"message":"Only the first 1000 search results are available","documentation_url":"https://docs.github.com/v3/search/"}
             raise "Oups"
         end
         return repos
