@@ -34,5 +34,6 @@ jobs:
 
     - name: Run specs for web app
       run: |
-        echo "$GITHUB_ACCESS_TOKEN" > config.txt
+        echo ${{ secrets.PERSONAL_ACCESS_TOKEN }} > config.txt
         crystal spec
+
