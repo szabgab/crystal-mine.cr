@@ -8,6 +8,13 @@ require "./mine/db"
 base_url = "https://crystal-mine.org"
 title = ""
 query = ""
+global = {
+  "start" => Time.monotonic,
+}
+
+before_all do
+  global["start"] = Time.monotonic
+end
 
 get "/" do
   title = "Welcome to the Crystal Mine"

@@ -51,6 +51,9 @@
   <%= content %>
 </section>
 
+<hr>
+Elapsed time <%= (Time.monotonic - global["start"]).total_milliseconds %> ms
+
 <%= ECR.render("src/views/incl/google.ecr") %>
 
 </body>
