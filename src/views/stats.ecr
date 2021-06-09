@@ -14,29 +14,6 @@
 <tr><td>No description:</td><td><a href="/search?special=no-description"><%= stats["no_description"] %></a></td></tr>
 <tr><td>No name:</td><td><a href="/search?special=no-name"><%= stats["no_name"] %></a></td></tr>
 <tr><td>No license:</td><td><a href="/search?special=no-license"><%= stats["no_license"] %></a></td></tr>
-</table>
-
-
-<h2><b>Crystal Versions</b></h2>
-<table>
-   <tr><td>no version specified</td><td><%= crystal_versions["no"] %></td></tr>
-   <tr><td>any version (*)</td><td><%= crystal_versions["*"] %></td></tr>
-   <tr><td>just a version number (deprecated, meaning minimum)</td><td><%= crystal_versions["just_version"] %></td></tr>
-   <tr><td>A minimum (e.g. >= 1.0.0) </td><td><%= crystal_versions["minimum_ge"] %></td></tr>
-   <tr><td>A min and max (e.g. >= 1.0.0, < 2.0.0)</td><td><%= crystal_versions["minimum_ge_maximum_lt"] %></td></tr>
-   <tr><td>A tilde min (e.g. ~> 1.0.0)</td><td><%= crystal_versions["tilde_lt"] %></td></tr>
-   <tr><td>other</td><td><%= crystal_versions["other"] %></td></tr>
-</table>
-
-<ul>
-<% other_crystal_versions.each {|version| %>
-   <li><%= version %></li>
-<% } %>
-</ul>
-
-<h2><b>Licenses</b></h2>
-<table>
-<% licenses.each {|row| %>
-   <tr><td><%= row.name %></td><td><%= row.value %></td></tr>
-<% } %>
+<tr><td><a href="/stats/versions">Crystal versions</a></td><td></td></tr>
+<tr><td><a href="/stats/licenses">Licenses</a></td><td></td></tr>
 </table>

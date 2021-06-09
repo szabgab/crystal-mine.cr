@@ -20,9 +20,17 @@ end
 
 get "/stats" do
   stats = get_stats
-  licenses = get_licenses
-  crystal_versions, other_crystal_versions = get_crystal_versions
   render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
+end
+
+get "/stats/versions" do
+  crystal_versions, other_crystal_versions = get_crystal_versions
+  render "src/views/crystal_versions.ecr", "src/views/layouts/layout.ecr"
+end
+
+get "/stats/licenses" do
+  licenses = get_licenses
+  render "src/views/licenses.ecr", "src/views/layouts/layout.ecr"
 end
 
 get "/search" do |env|
