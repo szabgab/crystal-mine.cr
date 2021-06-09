@@ -36,6 +36,7 @@ end
 get "/search" do |env|
   query = env.params.query.has_key?("query") ? env.params.query["query"] : ""
   special = env.params.query.has_key?("special") ? env.params.query["special"] : ""
+  crystal_version = env.params.query.has_key?("crystal") ? env.params.query["crystal"] : ""
   page = begin env.params.query["page"].to_i rescue 1 end
   size = begin env.params.query["size"].to_i rescue 10 end
   shards, total = get_shards(query, special, limit = size, offset = (page-1)*size)

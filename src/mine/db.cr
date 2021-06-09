@@ -184,6 +184,16 @@ class Dependency
     end
 end
 
+class OtherVersion
+    property crystal_version : String
+    property host : String
+    property user_name : String
+    property repo_name : String
+    def initialize(@crystal_version, @host, @user_name, @repo_name)
+    end
+end
+
+
 def get_all_dependencies()
     dependencies = [] of Dependency
     db_file = get_db_file
@@ -236,7 +246,7 @@ def get_crystal_versions()
         "minimum_ge_maximum_lt" => 0,
         "tilde_lt" => 0,
     }
-    others = [] of String
+    others = [] of OtherVersion
     DB.open "sqlite3://#{db_file}" do |db|
         # table["no"] = count(db, %{SELECT COUNT(*) FROM shards WHERE crystal = ""})
         # table["*"]  = count(db, %{SELECT COUNT(*) FROM shards WHERE crystal = "*"})
@@ -248,9 +258,13 @@ def get_crystal_versions()
         # What does ~>  mean?
         # Other
 
-        db.query "SELECT crystal FROM shards"  do |rs|
+        db.query "SELECT crystal, host, user_name, repo_name FROM shards"  do |rs|
             rs.each do
                 crystal_version = rs.read(String)
+                host = rs.read(String)
+                user_name = rs.read(String)
+                repo_name = rs.read(String)
+
                 if crystal_version =~ /^\s*$/
                     table["no"] += 1
                 elsif crystal_version =~ /^\s*\*\s*$/
@@ -273,7 +287,7 @@ def get_crystal_versions()
                     table["tilde_lt"] += 1
                 else
                     table["other"] += 1
-                    others.push(crystal_version)
+                    others.push OtherVersion.new(crystal_version, host, user_name, repo_name)
                 end
             end
         end
