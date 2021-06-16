@@ -1,5 +1,6 @@
 require "./spec_helper"
 require "../src/collect"
+require "../src/mine/tools"
 
 
 describe "Collect" do
