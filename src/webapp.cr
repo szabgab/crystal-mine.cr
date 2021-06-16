@@ -8,34 +8,30 @@ require "./mine/db"
 base_url = "https://crystal-mine.org"
 title = ""
 query = ""
-global = {
-  "start" => Time.monotonic,
-}
-
-before_all do
-  global["start"] = Time.monotonic
+class HTTP::Server::Context
+  getter start_time : Time::Span = Time.monotonic
 end
 
-get "/" do
+get "/" do |env|
   title = "Welcome to the Crystal Mine"
   render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
 
-get "/about" do
+get "/about" do |env|
   render "src/views/about.ecr", "src/views/layouts/layout.ecr"
 end
 
-get "/stats" do
+get "/stats" do |env|
   stats = get_stats
   render "src/views/stats.ecr", "src/views/layouts/layout.ecr"
 end
 
-get "/stats/versions" do
+get "/stats/versions" do |env|
   crystal_versions, other_crystal_versions = get_crystal_versions
   render "src/views/crystal_versions.ecr", "src/views/layouts/layout.ecr"
 end
 
-get "/stats/licenses" do
+get "/stats/licenses" do |env|
   licenses = get_licenses
   render "src/views/licenses.ecr", "src/views/layouts/layout.ecr"
 end
@@ -55,7 +51,7 @@ get "/search" do |env|
 end
 
 # github.com nothing special is shown as right now everything is from github.com
-get "/github.com" do
+get "/github.com" do |env|
   render "src/views/main.ecr", "src/views/layouts/layout.ecr"
 end
 
